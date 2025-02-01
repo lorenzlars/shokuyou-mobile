@@ -1,23 +1,30 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {useNavigation} from "@react-navigation/native";
+import {RecipeScreenNavigationProps} from "../screens/Recipe";
 
 type Props = {
+  id: string;
   name: string;
   description: string;
 }
 
 export default function RecipeListItem(props: Props) {
+  const navigation = useNavigation<RecipeScreenNavigationProps>();
+
   return (
-      <View style={styles.container}>
-        <View style={styles.details}>
-          <Text style={styles.title}>
-            {props.name}
-          </Text>
-          <Text>
-            {props.description}
-          </Text>
+      <Pressable onPress={() => navigation.navigate('Recipe', {id: props.id})}>
+        <View style={styles.container}>
+          <Image style={styles.image} source={{uri: 'https://picsum.photos/200'}}/>
+          <View style={styles.details}>
+            <Text style={styles.title}>
+              {props.name}
+            </Text>
+            <Text style={styles.description}>
+              {props.description}
+            </Text>
+          </View>
         </View>
-        <Image style={styles.image} source={{uri: 'https://picsum.photos/200'}}/>
-      </View>
+      </Pressable>
   );
 }
 
@@ -26,17 +33,22 @@ const styles = StyleSheet.create({
     width: '100%',
     flex: 1,
     flexDirection: 'row',
-    padding: 10,
-    gap: 10,
+    padding: 18,
+    gap: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eeeeee',
   },
   details: {
     flex: 1,
     flexShrink: 1
   },
   title: {
-    fontWeight: 600
+    fontWeight: 700,
+    fontSize: 16.5,
   },
-  description: {},
+  description: {
+    color: '#aaaaaa'
+  },
   image: {
     width: 80,
     height: 80,

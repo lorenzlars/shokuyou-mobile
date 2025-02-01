@@ -1,25 +1,40 @@
 import {StatusBar} from 'expo-status-bar';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
-import RecipeListItem from "./components/RecipeListItem";
-import {useState} from "react";
+import {SafeAreaView, StyleSheet} from 'react-native';
+import {NavigationContainer} from "@react-navigation/native";
+import TabNavigator from "./screens/TabNavigator";
+import Recipe from "./screens/Recipe";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import {SafeAreaProvider} from "react-native-safe-area-context";
+
+export type RootStackParamList = {
+  Tabs: undefined;
+  Recipe: { id: number };
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
-  const [data, setData] = useState(Array.from({length: 1000}, (_, i) => ({
-    id: `${Math.random()}`,
-    name: "dolore et et",
-    description: "Adipisicing ad velit dolor ipsum amet labore id mollit pariatur."
-  })));
-
   return (
       <>
         <StatusBar style="auto"/>
-        <View style={styles.container}>
-          <FlatList
-              data={data}
-              renderItem={({item: recipe}) => <RecipeListItem {...recipe} />}
-              keyExtractor={(item) => item.id}
-          />
-        </View>
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.container}>
+            <NavigationContainer>
+              <Stack.Navigator
+                  screenOptions={{
+                    headerStyle: {backgroundColor: '#6ecaa6'},
+                  }}
+              >
+                <Stack.Screen name="Tabs" component={TabNavigator}/>
+                <Stack.Screen
+                    name="Recipe"
+                    component={Recipe}
+                    options={{title: 'Recipe'}}
+                />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </SafeAreaView>
+        </SafeAreaProvider>
       </>
   );
 }
