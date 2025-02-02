@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {RootStackParamList} from "../App";
 import React from "react";
@@ -12,7 +12,7 @@ export default function Recipe(props: RecipeScreenNavigationProps) {
   const params = props.route.params;
 
   function handleCreate() {
-    alert('Created');
+    Alert.alert('Created', 'Recipe created');
     navigation.goBack();
   }
 

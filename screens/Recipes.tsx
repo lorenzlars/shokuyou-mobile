@@ -1,8 +1,9 @@
-import {FlatList, SafeAreaView, ScrollView, StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import RecipeListItem from "../components/RecipeListItem";
 import {useLayoutEffect, useState} from "react";
 import {useNavigation} from "@react-navigation/native";
 import NavigationButton from "../components/NavigationButton";
+import {FlashList} from "@shopify/flash-list";
 
 export default function Recipes() {
   const navigation = useNavigation();
@@ -18,8 +19,8 @@ export default function Recipes() {
   );
 
   useLayoutEffect(() => {
-    navigation.setOptions({
-      title: 'Recipes',
+    navigation.getParent()?.setOptions({
+      headerLargeTitle: true,
       headerSearchBarOptions: {
         inputType: 'text',
         onChangeText: (event) => setSearch(event.nativeEvent.text),
@@ -28,25 +29,18 @@ export default function Recipes() {
       headerRight: () => <NavigationButton name="plus"
                                            onPress={() => navigation.navigate('Recipe')}/>,
     });
-    navigation.getParent()?.setOptions({
-      title: 'Recipesss',
-    })
   }, [navigation]);
 
   return (
-      <SafeAreaView>
-        {/*<FlatList*/}
-        {/*    data={data}*/}
-        {/*    renderItem={({item: recipe}) => <RecipeListItem {...recipe} />}*/}
-        {/*    keyExtractor={(item) => item.id}*/}
-        {/*    initialNumToRender={10}*/}
-        {/*/>*/}
-        <ScrollView contentInsetAdjustmentBehavior="automatic">
-          {filteredRecipes.map((recipe) => <RecipeListItem {...recipe}
-                                                           key={recipe.id}
-                                                           onPress={() => navigation.navigate('Recipe', {id: recipe.id})}/>)}
-        </ScrollView>
-      </SafeAreaView>
+      <FlashList
+          data={data}
+          renderItem={({item: recipe}) =>
+              <RecipeListItem {...recipe}
+                              onPress={() => navigation.navigate('Recipe', {id: recipe.id})}/>}
+          keyExtractor={(item) => item.id}
+          ItemSeparatorComponent={() => <View
+              style={{height: 1, backgroundColor: '#d1d1d1', marginLeft: 20, marginRight: 20}}/>}
+      />
   );
 }
 
