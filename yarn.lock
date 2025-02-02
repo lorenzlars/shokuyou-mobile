@@ -1591,7 +1591,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/vector-icons@npm:^14.0.0":
+"@expo/vector-icons@npm:^14.0.0, @expo/vector-icons@npm:^14.0.4":
   version: 14.0.4
   resolution: "@expo/vector-icons@npm:14.0.4"
   dependencies:
@@ -7878,6 +7878,7 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@babel/plugin-proposal-decorators": "npm:^7.25.9"
     "@babel/plugin-transform-private-methods": "npm:^7.25.9"
+    "@expo/vector-icons": "npm:^14.0.4"
     "@nozbe/watermelondb": "npm:^0.27.1"
     "@react-native/babel-preset": "npm:^0.77.0"
     "@react-navigation/bottom-tabs": "npm:^7.2.0"

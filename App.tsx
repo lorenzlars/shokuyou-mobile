@@ -1,37 +1,57 @@
 import {StatusBar} from 'expo-status-bar';
-import {SafeAreaView, StyleSheet} from 'react-native';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {NavigationContainer} from "@react-navigation/native";
-import TabNavigator from "./screens/TabNavigator";
-import Recipe from "./screens/Recipe";
-import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import Settings from "./screens/Settings";
+import {SafeAreaView, StyleSheet} from "react-native";
+import RecipesNavigator from "./screens/RecipesNavigator";
 
 export type RootStackParamList = {
-  Tabs: undefined;
-  Recipe: { id: number };
+  RecipesNavigator: undefined;
+  Settings: { id: number };
 };
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<RootStackParamList>();
 
 export default function App() {
   return (
       <>
-        <StatusBar style="auto"/>
+        <StatusBar/>
         <SafeAreaProvider>
-          <SafeAreaView style={styles.container}>
+          <SafeAreaView style={{flex: 1}}>
             <NavigationContainer>
-              <Stack.Navigator
+              <Tab.Navigator
                   screenOptions={{
-                    headerStyle: {backgroundColor: '#6ecaa6'},
+                    headerShown: false,
+                    headerTransparent: false,
+                    animation: 'shift',
+                    tabBarActiveTintColor: '#000000',
+                    tabBarInactiveTintColor: '#999999',
+                    tabBarStyle: {
+                      backgroundColor: '#ffffff',
+                    },
                   }}
               >
-                <Stack.Screen name="Tabs" component={TabNavigator}/>
-                <Stack.Screen
-                    name="Recipe"
-                    component={Recipe}
-                    options={{title: 'Recipe'}}
+                <Tab.Screen
+                    name="RecipesNavigator"
+                    component={RecipesNavigator}
+                    options={{
+                      title: 'Recipes',
+                      tabBarIconStyle: styles.tabBarIconStyle,
+                      tabBarIcon: () => (<MaterialCommunityIcons name="chef-hat" size={24}/>)
+                    }}
                 />
-              </Stack.Navigator>
+                <Tab.Screen
+                    name="Settings"
+                    component={Settings}
+                    options={{
+                      title: 'Settings',
+                      tabBarIconStyle: styles.tabBarIconStyle,
+                      tabBarIcon: () => (<MaterialCommunityIcons name="cog" size={24}/>)
+                    }}
+                />
+              </Tab.Navigator>
             </NavigationContainer>
           </SafeAreaView>
         </SafeAreaProvider>
@@ -40,7 +60,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
+  tabBarIconStyle: {}
 });
+

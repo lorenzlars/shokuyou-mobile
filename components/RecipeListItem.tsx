@@ -1,18 +1,15 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {useNavigation} from "@react-navigation/native";
-import {RecipeScreenNavigationProps} from "../screens/Recipe";
 
 type Props = {
   id: string;
   name: string;
   description: string;
+  onPress?: () => void;
 }
 
 export default function RecipeListItem(props: Props) {
-  const navigation = useNavigation<RecipeScreenNavigationProps>();
-
   return (
-      <Pressable onPress={() => navigation.navigate('Recipe', {id: props.id})}>
+      <Pressable onPress={props.onPress}>
         <View style={styles.container}>
           <Image style={styles.image} source={{uri: 'https://picsum.photos/200'}}/>
           <View style={styles.details}>
