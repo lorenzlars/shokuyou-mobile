@@ -4,17 +4,19 @@ import {useLayoutEffect, useState} from "react";
 import {useNavigation} from "@react-navigation/native";
 import NavigationButton from "../components/NavigationButton";
 import {FlashList} from "@shopify/flash-list";
+import {withObservables} from "@nozbe/watermelondb/react";
+import {database} from "../model";
 
-export default function Recipes() {
+function Recipes({recipes}) {
   const navigation = useNavigation();
 
   const [search, setSearch] = useState('');
-  const [data, setData] = useState(Array.from({length: 100}, (_, i) => ({
-    id: `${Math.round(Math.random() * 1000000)}`,
-    name: "dolore et et",
-    description: "Adipisicing ad velit dolor ipsum amet labore id mollit pariatur."
-  })));
-  const filteredRecipes = data.filter(recipe =>
+  // const [data, setData] = useState(Array.from({length: 100}, (_, i) => ({
+  //   id: `${Math.round(Math.random() * 1000000)}`,
+  //   name: "dolore et et",
+  //   description: "Adipisicing ad velit dolor ipsum amet labore id mollit pariatur."
+  // })));
+  const filteredRecipes = recipes.filter(recipe =>
       recipe.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -33,7 +35,7 @@ export default function Recipes() {
 
   return (
       <FlashList
-          data={data}
+          data={filteredRecipes}
           renderItem={({item: recipe}) =>
               <RecipeListItem {...recipe}
                               onPress={() => navigation.navigate('Recipe', {id: recipe.id})}/>}
@@ -50,4 +52,8 @@ const styles = StyleSheet.create({
   },
 });
 
+const enhance = withObservables([], () => ({
+  recipes: database.collections.get('recipes').query().observeWithColumns(['name', 'description']),
+}))
 
+export default enhance(Recipes)

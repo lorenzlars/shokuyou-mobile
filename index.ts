@@ -5,7 +5,7 @@ import SQLiteAdapter from "@nozbe/watermelondb/adapters/sqlite";
 import migrations from "./model/migrations";
 import {schema} from "./model/schema";
 import {Database} from "@nozbe/watermelondb";
-import Post from "./model/Post";
+import Recipe from "./model/Recipe";
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in Expo Go or in a native build,

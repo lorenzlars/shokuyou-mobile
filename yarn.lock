@@ -1797,13 +1797,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@morrowdigital/watermelondb-expo-plugin@npm:^2.3.3":
-  version: 2.3.3
-  resolution: "@morrowdigital/watermelondb-expo-plugin@npm:2.3.3"
-  checksum: 10c0/7040a7a0dcef23058c7236dbe82b6e4f93b02a78f4505517d5d57b43f76164778a38a7dfbb639e5fa53f7e47fce7f16d8d3c250f1e58c3811c72d37fd21519fd
-  languageName: node
-  linkType: hard
-
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -4294,17 +4287,6 @@ __metadata:
     react-native-reanimated:
       optional: true
   checksum: 10c0/2d58f6c55b23a6b3f000bb3b9a7a2f474dc5fd62edbcc6f6b8982751664b3e657065176fba73112f135911413f75c4d64af7f8c0cd2b7bfc6d25f4f7f87384bc
-  languageName: node
-  linkType: hard
-
-"expo-sqlite@npm:~15.1.1":
-  version: 15.1.1
-  resolution: "expo-sqlite@npm:15.1.1"
-  peerDependencies:
-    expo: "*"
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/d66beafeb00bfc2b6a639d4be8d30306d83fd18be3a584a3712c650df73d24ca77427e15fbfae44cb8d3707459053f01811c64b6eb2f15ebd3157a7868fb402b
   languageName: node
   linkType: hard
 
@@ -7925,7 +7907,6 @@ __metadata:
     "@babel/plugin-proposal-decorators": "npm:^7.25.9"
     "@babel/plugin-transform-private-methods": "npm:^7.25.9"
     "@expo/vector-icons": "npm:^14.0.4"
-    "@morrowdigital/watermelondb-expo-plugin": "npm:^2.3.3"
     "@nozbe/watermelondb": "npm:^0.27.1"
     "@react-native/babel-preset": "npm:^0.77.0"
     "@react-navigation/bottom-tabs": "npm:^7.2.0"
@@ -7937,7 +7918,6 @@ __metadata:
     expo: "npm:~52.0.28"
     expo-build-properties: "npm:^0.13.2"
     expo-router: "npm:^4.0.17"
-    expo-sqlite: "npm:~15.1.1"
     expo-status-bar: "npm:~2.0.1"
     metro-react-native-babel-preset: "npm:^0.77.0"
     react: "npm:18.3.1"
