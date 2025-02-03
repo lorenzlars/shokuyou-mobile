@@ -1,7 +1,7 @@
 import {Alert, StyleSheet, Text, TextInput, View} from 'react-native';
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {RootStackParamList} from "../App";
-import React, {useState} from "react";
+import {useLayoutEffect, useState} from "react";
 import {useNavigation} from "@react-navigation/native";
 import NavigationButton from "../components/NavigationButton";
 import {database} from "../model";
@@ -10,19 +10,24 @@ import Recipe from "../model/Recipe";
 export type RecipeScreenNavigationProps = NativeStackScreenProps<RootStackParamList, 'Recipe'>;
 
 export default function RecipeDetails(props: RecipeScreenNavigationProps) {
-  const [name, setName] = useState<string>()
   const navigation = useNavigation();
+  const [name, setName] = useState<string>('')
   const params = props.route.params;
 
-  async function handleCreate() {
-    await database.get<Recipe>('recipes').create((recipe) => {
-      recipe.name = ''
-    })
-    Alert.alert('Created', 'Recipe created');
+  function handleBack() {
     navigation.goBack();
   }
 
-  React.useLayoutEffect(() => {
+  async function handleCreate() {
+    const newRecipe = await database.get<Recipe>('recipes').create((recipe) => {
+      recipe.name = name
+      recipe.description = name
+    })
+    Alert.alert('Created');
+    navigation.goBack();
+  }
+
+  useLayoutEffect(() => {
     if (params?.id) {
       navigation.setOptions({
         title: params.id,
@@ -30,7 +35,7 @@ export default function RecipeDetails(props: RecipeScreenNavigationProps) {
     } else {
       navigation.setOptions({
         headerLeft: () => (
-            <NavigationButton name="close" theme="danger" onPress={() => navigation.goBack()}/>
+            <NavigationButton name="close" theme="danger" onPress={handleBack}/>
         ),
         headerRight: () => (
             <NavigationButton name="check" theme="success" onPress={handleCreate}/>
@@ -42,7 +47,7 @@ export default function RecipeDetails(props: RecipeScreenNavigationProps) {
 
   return (
       <View style={styles.container}>
-        <TextInput value={name} onChangeText={setName}/>
+        <TextInput style={{backgroundColor: 'red'}} value={name} onChangeText={setName}/>
       </View>
   );
 }
@@ -50,8 +55,5 @@ export default function RecipeDetails(props: RecipeScreenNavigationProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 58,
   },
 });

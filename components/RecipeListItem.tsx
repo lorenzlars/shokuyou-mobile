@@ -1,23 +1,22 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import Recipe from "../model/Recipe";
 
 type Props = {
-  id: string;
-  name: string;
-  description: string;
+  recipe: Recipe;
   onPress?: () => void;
 }
 
-export default function RecipeListItem(props: Props) {
+export default function RecipeListItem({recipe, onPress}: Props) {
   return (
-      <Pressable onPress={props.onPress}>
+      <Pressable onPress={onPress}>
         <View style={styles.container}>
           <Image style={styles.image} source={{uri: 'https://picsum.photos/200'}}/>
           <View style={styles.details}>
             <Text style={styles.title}>
-              {props.name}
+              {recipe.name}
             </Text>
             <Text style={styles.description}>
-              {props.description}
+              {recipe.description}
             </Text>
           </View>
         </View>

@@ -1,4 +1,3 @@
-import {StatusBar} from 'expo-status-bar';
 import {NavigationContainer} from "@react-navigation/native";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {SafeAreaView, StyleSheet, View} from "react-native";
@@ -15,25 +14,20 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-      <>
-        <StatusBar/>
-        <SafeAreaProvider>
-          <View style={{flex: 1, backgroundColor: '#ffffff'}}>
-            <SafeAreaView style={{flex: 1}}>
-              <NavigationContainer>
-                <Stack.Navigator
-                    screenOptions={{
-                      animation: 'simple_push'
-                    }}
-                >
-                  <Stack.Screen name="TabNavigator" component={TabNavigator}/>
-                  <Stack.Screen name="Recipe" component={RecipeDetails}/>
-                </Stack.Navigator>
-              </NavigationContainer>
-            </SafeAreaView>
-          </View>
-        </SafeAreaProvider>
-      </>
+      <SafeAreaProvider>
+        <SafeAreaView style={{flex: 1}}>
+          <NavigationContainer>
+            <Stack.Navigator
+                screenOptions={{
+                  animation: 'simple_push'
+                }}
+            >
+              <Stack.Screen name="TabNavigator" component={TabNavigator}/>
+              <Stack.Screen name="Recipe" component={RecipeDetails}/>
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SafeAreaView>
+      </SafeAreaProvider>
   );
 }
 

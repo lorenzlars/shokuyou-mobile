@@ -6,4 +6,5 @@ export default class Recipe extends Model {
   static table = 'recipes'
 
   @text('name') name: string;
+  @text('description') description: string;
 }

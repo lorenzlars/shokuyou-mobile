@@ -14,17 +14,20 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.shokuyou"
+      "bundleIdentifier": "dev.larslorenz.shokuyou"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.shokuyou"
+      "package": "dev.larslorenz.shokuyou"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "androidNavigationBar": {
+      "backgroundColor": "#ffffff"
     },
     "plugins": [
       [

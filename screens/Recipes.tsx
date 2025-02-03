@@ -6,16 +6,18 @@ import NavigationButton from "../components/NavigationButton";
 import {FlashList} from "@shopify/flash-list";
 import {withObservables} from "@nozbe/watermelondb/react";
 import {database} from "../model";
+import Recipe from "../model/Recipe";
 
-function Recipes({recipes}) {
+type Props = {
+  recipes: Recipe[];
+  count: number;
+  filter?: string;
+}
+
+function Recipes({recipes}: Props) {
   const navigation = useNavigation();
 
   const [search, setSearch] = useState('');
-  // const [data, setData] = useState(Array.from({length: 100}, (_, i) => ({
-  //   id: `${Math.round(Math.random() * 1000000)}`,
-  //   name: "dolore et et",
-  //   description: "Adipisicing ad velit dolor ipsum amet labore id mollit pariatur."
-  // })));
   const filteredRecipes = recipes.filter(recipe =>
       recipe.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -31,14 +33,18 @@ function Recipes({recipes}) {
       headerRight: () => <NavigationButton name="plus"
                                            onPress={() => navigation.navigate('Recipe')}/>,
     });
-  }, [navigation]);
+  }, []);
 
   return (
       <FlashList
           data={filteredRecipes}
-          renderItem={({item: recipe}) =>
-              <RecipeListItem {...recipe}
-                              onPress={() => navigation.navigate('Recipe', {id: recipe.id})}/>}
+          renderItem={({item}) =>
+              <RecipeListItem
+                  recipe={item}
+                  onPress={() => navigation.navigate('Recipe', {id: item.id})}
+              />
+          }
+          estimatedItemSize={30}
           keyExtractor={(item) => item.id}
           ItemSeparatorComponent={() => <View
               style={{height: 1, backgroundColor: '#d1d1d1', marginLeft: 20, marginRight: 20}}/>}
@@ -46,14 +52,10 @@ function Recipes({recipes}) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  },
-});
+const styles = StyleSheet.create({});
 
 const enhance = withObservables([], () => ({
-  recipes: database.collections.get('recipes').query().observeWithColumns(['name', 'description']),
+  recipes: database.collections.get<Recipe>('recipes').query(),
 }))
 
 export default enhance(Recipes)
