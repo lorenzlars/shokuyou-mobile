@@ -1,29 +1,41 @@
-import {Alert, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Alert, SafeAreaView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {RootStackParamList} from "../App";
 import {useLayoutEffect, useState} from "react";
 import {useNavigation} from "@react-navigation/native";
 import NavigationButton from "../components/NavigationButton";
-import {database} from "../model";
 import Recipe from "../model/Recipe";
+import {database} from "../model";
+import ContextMenu from "react-native-context-menu-view";
 
 export type RecipeScreenNavigationProps = NativeStackScreenProps<RootStackParamList, 'Recipe'>;
 
 export default function RecipeDetails(props: RecipeScreenNavigationProps) {
   const navigation = useNavigation();
-  const [name, setName] = useState<string>('')
   const params = props.route.params;
+  const [name, setName] = useState<string>('');
 
   function handleBack() {
     navigation.goBack();
   }
 
   async function handleCreate() {
-    const newRecipe = await database.get<Recipe>('recipes').create((recipe) => {
-      recipe.name = name
-      recipe.description = name
+    await database.write(async () => {
+      const newRecipe = await database.get<Recipe>('recipes').create((recipe) => {
+        recipe.name = name
+        recipe.description = name
+      })
+      Alert.alert('Created', `Recipe ${newRecipe.name} created`);
+      navigation.goBack();
     })
-    Alert.alert('Created');
+  }
+
+  async function handleDelete() {
+    await database.write(async () => {
+      const recipe = await database.get<Recipe>('recipes').find(params.id)
+      await recipe.destroyPermanently();
+    })
+
     navigation.goBack();
   }
 
@@ -31,6 +43,20 @@ export default function RecipeDetails(props: RecipeScreenNavigationProps) {
     if (params?.id) {
       navigation.setOptions({
         title: params.id,
+        headerRight: () => (
+            <ContextMenu
+                actions={[{title: "Delete"}]}
+                onPress={({nativeEvent}) => {
+                  switch (nativeEvent.index) {
+                    case 0:
+                      return handleDelete();
+                  }
+                }}
+                dropdownMenuMode={true}
+            >
+              <NavigationButton name="dots-horizontal"/>
+            </ContextMenu>
+        ),
       });
     } else {
       navigation.setOptions({
@@ -43,12 +69,15 @@ export default function RecipeDetails(props: RecipeScreenNavigationProps) {
       });
     }
 
-  }, [navigation]);
+  }, [navigation, name]);
 
   return (
-      <View style={styles.container}>
-        <TextInput style={{backgroundColor: 'red'}} value={name} onChangeText={setName}/>
-      </View>
+      <SafeAreaView style={styles.container}>
+        <TextInput
+            placeholder="Name"
+            style={{backgroundColor: 'red'}} value={name}
+            onChangeText={setName}/>
+      </SafeAreaView>
   );
 }
 

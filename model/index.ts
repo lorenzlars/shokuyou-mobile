@@ -4,13 +4,19 @@ import {schema} from "./schema";
 import migrations from "./migrations";
 import Recipe from "./Recipe";
 
+export let database: Database;
+
 const adapter = new SQLiteAdapter({
   schema,
   migrations,
   jsi: true,
 })
 
-export const database = new Database({
-  adapter,
-  modelClasses: [Recipe],
-})
+export function initDatabase() {
+  if (!database) {
+    database = new Database({
+      adapter,
+      modelClasses: [Recipe],
+    })
+  }
+}

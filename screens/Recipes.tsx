@@ -1,12 +1,12 @@
-import {StyleSheet, View} from 'react-native';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import RecipeListItem from "../components/RecipeListItem";
 import {useLayoutEffect, useState} from "react";
-import {useNavigation} from "@react-navigation/native";
+import {useNavigation, useRoute} from "@react-navigation/native";
 import NavigationButton from "../components/NavigationButton";
 import {FlashList} from "@shopify/flash-list";
 import {withObservables} from "@nozbe/watermelondb/react";
-import {database} from "../model";
 import Recipe from "../model/Recipe";
+import {database} from "../model";
 
 type Props = {
   recipes: Recipe[];
@@ -16,6 +16,8 @@ type Props = {
 
 function Recipes({recipes}: Props) {
   const navigation = useNavigation();
+  const route = useRoute()
+
 
   const [search, setSearch] = useState('');
   const filteredRecipes = recipes.filter(recipe =>
@@ -24,6 +26,7 @@ function Recipes({recipes}: Props) {
 
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({
+      title: 'Recipes',
       headerLargeTitle: true,
       headerSearchBarOptions: {
         inputType: 'text',
@@ -33,22 +36,24 @@ function Recipes({recipes}: Props) {
       headerRight: () => <NavigationButton name="plus"
                                            onPress={() => navigation.navigate('Recipe')}/>,
     });
-  }, []);
+  }, [route.name]);
 
   return (
-      <FlashList
-          data={filteredRecipes}
-          renderItem={({item}) =>
-              <RecipeListItem
-                  recipe={item}
-                  onPress={() => navigation.navigate('Recipe', {id: item.id})}
-              />
-          }
-          estimatedItemSize={30}
-          keyExtractor={(item) => item.id}
-          ItemSeparatorComponent={() => <View
-              style={{height: 1, backgroundColor: '#d1d1d1', marginLeft: 20, marginRight: 20}}/>}
-      />
+      <SafeAreaView style={{flex: 1}}>
+        <FlashList
+            data={filteredRecipes}
+            renderItem={({item}) =>
+                <RecipeListItem
+                    recipe={item}
+                    onPress={() => navigation.navigate('Recipe', {id: item.id})}
+                />
+            }
+            estimatedItemSize={30}
+            keyExtractor={(item) => item.id}
+            ItemSeparatorComponent={() => <View
+                style={{height: 1, backgroundColor: '#d1d1d1', marginLeft: 20, marginRight: 20}}/>}
+        />
+      </SafeAreaView>
   );
 }
 
