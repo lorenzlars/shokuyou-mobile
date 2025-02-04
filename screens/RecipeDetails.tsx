@@ -1,7 +1,7 @@
-import {Alert, SafeAreaView, StyleSheet, Text, TextInput, View} from 'react-native';
+import {SafeAreaView, StyleSheet} from 'react-native';
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {RootStackParamList} from "../App";
-import {useLayoutEffect, useState} from "react";
+import {useEffect, useLayoutEffect} from "react";
 import {useNavigation} from "@react-navigation/native";
 import NavigationButton from "../components/NavigationButton";
 import Recipe from "../model/Recipe";
@@ -12,11 +12,20 @@ import {RecipeFormValues, useRecipeForm} from "./useRecipeForm";
 
 export type RecipeScreenNavigationProps = NativeStackScreenProps<RootStackParamList, 'Recipe'>;
 
-export default function RecipeDetails(props: RecipeScreenNavigationProps) {
+export default function RecipeDetails({route}: RecipeScreenNavigationProps) {
   const navigation = useNavigation();
-  const params = props.route.params;
+  const {control, handleSubmit, reset} = useRecipeForm()
 
-  const {control, handleSubmit} = useRecipeForm()
+  useEffect(() => {
+    if (route.params?.recipe) {
+      const recipe = route.params.recipe;
+
+      reset({
+        name: recipe.name,
+        description: recipe.description,
+      })
+    }
+  }, [])
 
   function handleBack() {
     navigation.goBack();
@@ -24,18 +33,17 @@ export default function RecipeDetails(props: RecipeScreenNavigationProps) {
 
   async function handleCreate(values: RecipeFormValues) {
     await database.write(async () => {
-      const newRecipe = await database.get<Recipe>('recipes').create((recipe) => {
+      await database.get<Recipe>('recipes').create((recipe) => {
         recipe.name = values.name
-        recipe.description = values.name
+        recipe.description = values.description
       })
-      Alert.alert('Created', `Recipe ${newRecipe.name} created`);
       navigation.goBack();
     })
   }
 
   async function handleDelete() {
     await database.write(async () => {
-      const recipe = await database.get<Recipe>('recipes').find(params.id)
+      const recipe = await database.get<Recipe>('recipes').find(route.params.recipe!.id)
       await recipe.destroyPermanently();
     })
 
@@ -43,9 +51,9 @@ export default function RecipeDetails(props: RecipeScreenNavigationProps) {
   }
 
   useLayoutEffect(() => {
-    if (params?.id) {
+    if (route.params?.recipe) {
       navigation.setOptions({
-        title: params.id,
+        title: route.params.recipe.id,
         headerRight: () => (
             <ContextMenu
                 actions={[{title: "Delete"}]}

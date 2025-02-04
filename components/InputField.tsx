@@ -1,13 +1,13 @@
-import {Control, Controller} from "react-hook-form";
+import {Control, Controller, FieldValues, Path} from "react-hook-form";
 import {StyleSheet, TextInput, View, Text} from "react-native";
 
-type Props = {
-  control: Control;
-  name: string;
+type Props<T extends FieldValues> = {
+  control: Control<T>;
+  name: Path<T>;
   placeholder: string
 }
 
-export default function InputField(props: Props) {
+export default function InputField<T extends FieldValues>(props: Props<T>) {
   return (
 
       <Controller

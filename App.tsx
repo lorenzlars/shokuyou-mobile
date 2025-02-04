@@ -6,10 +6,11 @@ import RecipeDetails from "./screens/RecipeDetails";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {useEffect} from "react";
 import {database, initDatabase} from "./model";
+import Recipe from "./model/Recipe";
 
 export type RootStackParamList = {
   TabNavigator: undefined;
-  Recipe: { id?: string };
+  Recipe: { recipe?: Recipe };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

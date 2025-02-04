@@ -45,7 +45,7 @@ function Recipes({recipes}: Props) {
             renderItem={({item}) =>
                 <RecipeListItem
                     recipe={item}
-                    onPress={() => navigation.navigate('Recipe', {id: item.id})}
+                    onPress={() => navigation.navigate('Recipe', {recipe: item._raw})}
                 />
             }
             estimatedItemSize={30}
