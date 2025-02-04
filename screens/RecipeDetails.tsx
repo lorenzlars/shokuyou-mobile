@@ -7,23 +7,26 @@ import NavigationButton from "../components/NavigationButton";
 import Recipe from "../model/Recipe";
 import {database} from "../model";
 import ContextMenu from "react-native-context-menu-view";
+import InputField from "../components/InputField";
+import {RecipeFormValues, useRecipeForm} from "./useRecipeForm";
 
 export type RecipeScreenNavigationProps = NativeStackScreenProps<RootStackParamList, 'Recipe'>;
 
 export default function RecipeDetails(props: RecipeScreenNavigationProps) {
   const navigation = useNavigation();
   const params = props.route.params;
-  const [name, setName] = useState<string>('');
+
+  const {control, handleSubmit} = useRecipeForm()
 
   function handleBack() {
     navigation.goBack();
   }
 
-  async function handleCreate() {
+  async function handleCreate(values: RecipeFormValues) {
     await database.write(async () => {
       const newRecipe = await database.get<Recipe>('recipes').create((recipe) => {
-        recipe.name = name
-        recipe.description = name
+        recipe.name = values.name
+        recipe.description = values.name
       })
       Alert.alert('Created', `Recipe ${newRecipe.name} created`);
       navigation.goBack();
@@ -64,19 +67,23 @@ export default function RecipeDetails(props: RecipeScreenNavigationProps) {
             <NavigationButton name="close" theme="danger" onPress={handleBack}/>
         ),
         headerRight: () => (
-            <NavigationButton name="check" theme="success" onPress={handleCreate}/>
+            <NavigationButton name="check" theme="success" onPress={handleSubmit(handleCreate)}/>
         ),
       });
     }
 
-  }, [navigation, name]);
+  }, [navigation]);
 
   return (
       <SafeAreaView style={styles.container}>
-        <TextInput
-            placeholder="Name"
-            style={{backgroundColor: 'red'}} value={name}
-            onChangeText={setName}/>
+        <InputField
+            control={control}
+            name="name"
+            placeholder="Name"/>
+        <InputField
+            control={control}
+            name="description"
+            placeholder="Description"/>
       </SafeAreaView>
   );
 }
@@ -84,5 +91,6 @@ export default function RecipeDetails(props: RecipeScreenNavigationProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    margin: 10,
   },
 });
