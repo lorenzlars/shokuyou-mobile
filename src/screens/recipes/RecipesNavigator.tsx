@@ -15,12 +15,12 @@ type RecipesNavigationParamList = {
 
 type RecipesStackNavigatorProps = StackScreenProps<RecipesNavigationParamList, keyof RecipesNavigationParamList>
 
-export type RecipeNavigatorParams = CompositeNavigationProps<RootNavigatorProps, RecipesStackNavigatorProps>
+export type RecipesNavigatorParams = CompositeNavigationProps<RootNavigatorProps, RecipesStackNavigatorProps>
 
 const Stack = createNativeStackNavigator<RecipesNavigationParamList>();
 
 export default function RecipesNavigator() {
-  const navigation = useNavigation<RecipeNavigatorParams>();
+  const navigation = useNavigation<RecipesNavigatorParams>();
 
   return (
       <Stack.Navigator

@@ -14,15 +14,15 @@ import RecipeDetails from "./screens/recipes/details/RecipeDetails";
 import {BottomTabScreenProps, createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import RecipesNavigator from "./screens/recipes/RecipesNavigator";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
-import Settings from "./screens/settings/Settings";
 import {RecipeEditForm, RecipeForm} from "./screens/recipes/details/RecipeForm";
 import NavigationButton from "./components/NavigationButton";
 import type {StackScreenProps} from "@react-navigation/stack";
 import {DatabaseProvider} from "@nozbe/watermelondb/react";
+import SettingsNavigator from "./screens/settings/SettingsNavigator";
 
 type RootTabNavigatorParamList = {
   RecipesNavigator: undefined;
-  Settings: undefined;
+  SettingsNavigator: undefined;
 };
 
 type RootStackNavigatorParamList = {
@@ -58,8 +58,8 @@ function RootTabNavigator() {
             }}
         />
         <Tab.Screen
-            name="Settings"
-            component={Settings}
+            name="SettingsNavigator"
+            component={SettingsNavigator}
             options={{
               title: 'Settings',
               tabBarIcon: () => (<MaterialCommunityIcons name="cog" size={24}/>)

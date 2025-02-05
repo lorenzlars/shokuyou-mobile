@@ -5,7 +5,7 @@ import {useNavigation} from "@react-navigation/native";
 import NavigationButton from "../../../components/NavigationButton";
 import Recipe from "../../../model/Recipe";
 import ContextMenu from "react-native-context-menu-view";
-import {RecipeNavigatorParams} from "../RecipesNavigator";
+import {RecipesNavigatorParams} from "../RecipesNavigator";
 import {RootParamList} from "../../../App";
 import {compose, useDatabase, withDatabase, withObservables} from "@nozbe/watermelondb/react";
 import {EnhancedPropsWithDatabase, ObservableProps} from "../../../types/watermelondb";
@@ -15,7 +15,7 @@ type Props = {
 }
 
 function RecipeDetails({recipe}: Props) {
-  const navigation = useNavigation<RecipeNavigatorParams>();
+  const navigation = useNavigation<RecipesNavigatorParams>();
   const database = useDatabase()
 
   async function handleDelete() {
