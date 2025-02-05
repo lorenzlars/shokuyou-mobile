@@ -1,17 +1,16 @@
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import RecipeListItem from "../../components/RecipeListItem";
-import {useLayoutEffect, useState} from "react";
+import {useLayoutEffect, useState, JSX} from "react";
 import {useNavigation} from "@react-navigation/native";
 import {FlashList} from "@shopify/flash-list";
 import {compose, withDatabase, withObservables} from "@nozbe/watermelondb/react";
 import Recipe from "../../model/Recipe";
 import {RecipeNavigatorParams} from "./RecipesNavigator";
 import {Database} from "@nozbe/watermelondb";
+import {ObservableProps} from "../../types/watermelondb";
 
 type Props = {
   recipes: Recipe[];
-  count: number;
-  filter?: string;
 }
 
 function RecipesOverview({recipes}: Props) {
@@ -55,9 +54,9 @@ const styles = StyleSheet.create({});
 
 const enhance = compose(
     withDatabase,
-    withObservables([], ({database}: { database: Database }) => ({
+    withObservables<{ database: Database }, ObservableProps<Props>>([], ({database}) => ({
       recipes: database.collections.get<Recipe>('recipes').query().observeWithColumns(["name", "description"]),
-    })),
+    })) as any,
 )
 
-export default enhance(RecipesOverview)
+export default enhance(RecipesOverview) as JSX.Element

@@ -8,7 +8,7 @@ import Recipe from "../../../model/Recipe";
 import InputField from "../../../components/InputField";
 import {RecipeFormValues, useRecipeForm} from "./useRecipeForm";
 import {withObservables, useDatabase, compose, withDatabase} from "@nozbe/watermelondb/react";
-import {EnhancedPropsWithDatabase} from "../../../types/watermelondb";
+import {EnhancedPropsWithDatabase, ObservableProps} from "../../../types/watermelondb";
 
 type Props = {
   recipe?: Recipe
@@ -93,13 +93,13 @@ const styles = StyleSheet.create({
   },
 });
 
-type EnhancedProps = EnhancedPropsWithDatabase<NativeStackScreenProps<RootParamList, 'RecipeForm'>>
+type EnhancedProps = EnhancedPropsWithDatabase<NativeStackScreenProps<RootParamList, 'RecipeEditForm'>>
 
 const enhance = compose(
     withDatabase,
-    withObservables([], ({route, database}: EnhancedProps) => ({
+    withObservables<EnhancedProps, ObservableProps<Props>>([], ({route, database}) => ({
       recipe: database.collections.get<Recipe>('recipes').findAndObserve(route.params.id),
-    })),
+    })) as any,
 )
 
 export const RecipeEditForm = enhance(RecipeForm)

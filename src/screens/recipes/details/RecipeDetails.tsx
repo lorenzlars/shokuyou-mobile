@@ -8,7 +8,7 @@ import ContextMenu from "react-native-context-menu-view";
 import {RecipeNavigatorParams} from "../RecipesNavigator";
 import {RootParamList} from "../../../App";
 import {compose, useDatabase, withDatabase, withObservables} from "@nozbe/watermelondb/react";
-import {EnhancedPropsWithDatabase} from "../../../types/watermelondb";
+import {EnhancedPropsWithDatabase, ObservableProps} from "../../../types/watermelondb";
 
 type Props = {
   recipe: Recipe
@@ -80,9 +80,9 @@ type EnhancedProps = EnhancedPropsWithDatabase<NativeStackScreenProps<RootParamL
 
 const enhance = compose(
     withDatabase,
-    withObservables([], ({route, database}: EnhancedProps) => ({
+    withObservables<EnhancedProps, ObservableProps<Props>>([], ({route, database}) => ({
       recipe: database.collections.get<Recipe>('recipes').findAndObserve(route.params.id),
-    })),
+    })) as any,
 )
 
 export default enhance(RecipeDetails)
