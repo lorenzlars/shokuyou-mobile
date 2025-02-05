@@ -1,16 +1,16 @@
 import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {RootStackParamList} from "../App";
+import {RootStackNavigatorParamList} from "../../../App";
 import {useEffect, useLayoutEffect} from "react";
 import {useNavigation} from "@react-navigation/native";
-import NavigationButton from "../components/NavigationButton";
-import Recipe from "../model/Recipe";
-import {database} from "../model";
+import NavigationButton from "../../../components/NavigationButton";
+import Recipe from "../../../model/Recipe";
+import {database} from "../../../model";
 import ContextMenu from "react-native-context-menu-view";
-import InputField from "../components/InputField";
+import InputField from "../../../components/InputField";
 import {RecipeFormValues, useRecipeForm} from "./useRecipeForm";
 
-export type RecipeScreenNavigationProps = NativeStackScreenProps<RootStackParamList, 'Recipe'>;
+export type RecipeScreenNavigationProps = NativeStackScreenProps<RootStackNavigatorParamList, 'RecipeDetails'>;
 
 export default function RecipeDetails({route}: RecipeScreenNavigationProps) {
   const navigation = useNavigation();
@@ -55,11 +55,13 @@ export default function RecipeDetails({route}: RecipeScreenNavigationProps) {
       navigation.setOptions({
         headerRight: () => (
             <ContextMenu
-                actions={[{title: "Delete"}]}
+                actions={[{title: "Delete"}, {title: "Edit"}]}
                 onPress={({nativeEvent}) => {
                   switch (nativeEvent.index) {
                     case 0:
                       return handleDelete();
+                    case 1:
+                      return navigation.navigate('RecipeForm', {recipe: route.params.recipe});
                   }
                 }}
                 dropdownMenuMode={true}

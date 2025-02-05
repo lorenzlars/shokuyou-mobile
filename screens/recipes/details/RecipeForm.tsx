@@ -1,18 +1,18 @@
 import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {RootStackParamList} from "../App";
+import {RootStackNavigatorParamList} from "../../../App";
 import {useEffect, useLayoutEffect} from "react";
 import {useNavigation} from "@react-navigation/native";
-import NavigationButton from "../components/NavigationButton";
-import Recipe from "../model/Recipe";
-import {database} from "../model";
+import NavigationButton from "../../../components/NavigationButton";
+import Recipe from "../../../model/Recipe";
+import {database} from "../../../model";
 import ContextMenu from "react-native-context-menu-view";
-import InputField from "../components/InputField";
+import InputField from "../../../components/InputField";
 import {RecipeFormValues, useRecipeForm} from "./useRecipeForm";
 
-export type RecipeScreenNavigationProps = NativeStackScreenProps<RootStackParamList, 'RecipeEdit'>;
+export type RecipeScreenNavigationProps = NativeStackScreenProps<RootStackNavigatorParamList, 'RecipeForm'>;
 
-export default function RecipeEdit({route}: RecipeScreenNavigationProps) {
+export default function RecipeForm({route}: RecipeScreenNavigationProps) {
   const navigation = useNavigation();
   const {control, handleSubmit, reset} = useRecipeForm()
 

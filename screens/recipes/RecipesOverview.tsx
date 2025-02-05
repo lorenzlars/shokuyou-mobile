@@ -1,11 +1,11 @@
 import {SafeAreaView, StyleSheet, View} from 'react-native';
-import RecipeListItem from "../components/RecipeListItem";
+import RecipeListItem from "../../components/RecipeListItem";
 import {useLayoutEffect, useState} from "react";
 import {useNavigation} from "@react-navigation/native";
 import {FlashList} from "@shopify/flash-list";
 import {withObservables} from "@nozbe/watermelondb/react";
-import Recipe from "../model/Recipe";
-import {database} from "../model";
+import Recipe from "../../model/Recipe";
+import {database} from "../../model";
 
 type Props = {
   recipes: Recipe[];
@@ -13,7 +13,7 @@ type Props = {
   filter?: string;
 }
 
-function Recipes({recipes}: Props) {
+function RecipesOverview({recipes}: Props) {
   const navigation = useNavigation();
 
   const [search, setSearch] = useState('');
@@ -39,7 +39,7 @@ function Recipes({recipes}: Props) {
             renderItem={({item}) =>
                 <RecipeListItem
                     recipe={item}
-                    onPress={() => navigation.navigate('Recipe', {recipe: item._raw})}
+                    onPress={() => navigation.navigate('RecipeDetails', {recipe: item._raw})}
                 />
             }
             estimatedItemSize={30}
@@ -57,4 +57,4 @@ const enhance = withObservables([], () => ({
   recipes: database.collections.get<Recipe>('recipes').query(),
 }))
 
-export default enhance(Recipes)
+export default enhance(RecipesOverview)

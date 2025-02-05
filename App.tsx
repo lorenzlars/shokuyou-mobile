@@ -5,19 +5,58 @@ import {useEffect} from "react";
 import {database, initDatabase} from "./model";
 // https://reactnavigation.org/docs/stack-navigator#installation
 import 'react-native-gesture-handler';
-import TabNavigator from "./screens/TabNavigator";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import Recipe from "./model/Recipe";
-import RecipeDetails from "./screens/RecipeDetails";
-import RecipesEdit from "./screens/RecipesEdit";
+import RecipeDetails from "./screens/recipes/details/RecipeDetails";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import RecipesNavigator from "./screens/recipes/RecipesNavigator";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
+import Settings from "./screens/settings/Settings";
+import RecipeForm from "./screens/recipes/details/RecipeForm";
 
 
-export type RootStackParamList = {
-  TabNavigation: undefined;
-  Recipe: { recipe?: Recipe };
+export type RootStackNavigatorParamList = {
+  RootTabNavigator: undefined;
+  RecipeDetails: { recipe?: Recipe };
+  RecipeForm: { recipe?: Recipe };
 };
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+export type RootTabNavigatorParamList = {
+  RecipesNavigator: undefined;
+  Settings: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackNavigatorParamList>();
+const Tab = createBottomTabNavigator<RootTabNavigatorParamList>();
+
+function RootTabNavigator() {
+  return (
+      <Tab.Navigator
+          screenOptions={{
+            headerShown: false,
+            animation: 'shift',
+          }}
+      >
+        <Tab.Screen
+            name="RecipesNavigator"
+            component={RecipesNavigator}
+            options={{
+              title: 'Recipes',
+              tabBarIcon: () => (<MaterialCommunityIcons name="chef-hat" size={24}/>)
+            }}
+        />
+        <Tab.Screen
+            name="Settings"
+            component={Settings}
+            options={{
+              title: 'Settings',
+              tabBarIcon: () => (<MaterialCommunityIcons name="cog" size={24}/>)
+            }}
+        />
+      </Tab.Navigator>
+  );
+}
+
 
 export default function App() {
   useEffect(() => {
@@ -28,10 +67,10 @@ export default function App() {
       <SafeAreaProvider>
         <NavigationContainer>
           <Stack.Navigator>
-            <Stack.Screen name="TabNavigation" component={TabNavigator}
+            <Stack.Screen name="RootTabNavigator" component={RootTabNavigator}
                           options={{headerShown: false}}/>
-            <Stack.Screen name="Recipe" component={RecipeDetails}/>
-            <Stack.Screen name="RecipeEdit" component={RecipesEdit}
+            <Stack.Screen name="RecipeDetails" component={RecipeDetails}/>
+            <Stack.Screen name="RecipeForm" component={RecipeForm}
                           options={{presentation: 'modal'}}/>
           </Stack.Navigator>
         </NavigationContainer>
