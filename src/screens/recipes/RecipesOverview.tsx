@@ -55,7 +55,7 @@ const styles = StyleSheet.create({});
 const enhance = compose(
     withDatabase,
     withObservables<{ database: Database }, ObservableProps<Props>>([], ({database}) => ({
-      recipes: database.collections.get<Recipe>('recipes').query().observeWithColumns(["name", "description"]),
+      recipes: database.collections.get<Recipe>('recipes').query().observeWithColumns(["_id", "name", "description"]),
     })) as any,
 )
 
