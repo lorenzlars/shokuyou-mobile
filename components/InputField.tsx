@@ -4,7 +4,8 @@ import {StyleSheet, TextInput, View, Text} from "react-native";
 type Props<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;
-  placeholder: string
+  label?: string;
+  placeholder?: string
 }
 
 export default function InputField<T extends FieldValues>(props: Props<T>) {
@@ -16,14 +17,16 @@ export default function InputField<T extends FieldValues>(props: Props<T>) {
           render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
               <>
                 <View style={styles.container}>
+                  <Text>{props.label}</Text>
                   <TextInput
+                      style={styles.input}
                       placeholder={props.placeholder}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
                   />
                 </View>
-                <Text>{error?.message}</Text>
+                {error?.message && <Text style={styles.error}>{error.message}</Text>}
               </>
           )}
       />
@@ -37,5 +40,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderWidth: 1,
     borderRadius: 10,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
   },
+  input: {
+    flex: 1,
+    color: '#000000',
+    maxWidth: '70%',
+  },
+  error: {
+    color: 'red',
+  }
 });

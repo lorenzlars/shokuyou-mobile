@@ -10,9 +10,9 @@ import ContextMenu from "react-native-context-menu-view";
 import InputField from "../components/InputField";
 import {RecipeFormValues, useRecipeForm} from "./useRecipeForm";
 
-export type RecipeScreenNavigationProps = NativeStackScreenProps<RootStackParamList, 'Recipe'>;
+export type RecipeScreenNavigationProps = NativeStackScreenProps<RootStackParamList, 'RecipeEdit'>;
 
-export default function RecipeDetails({route}: RecipeScreenNavigationProps) {
+export default function RecipeEdit({route}: RecipeScreenNavigationProps) {
   const navigation = useNavigation();
   const {control, handleSubmit, reset} = useRecipeForm()
 

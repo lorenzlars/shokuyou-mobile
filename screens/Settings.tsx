@@ -1,16 +1,19 @@
 import {StyleSheet, Text, View} from 'react-native';
-import {useLayoutEffect} from "react";
-import {useNavigation, useRoute} from "@react-navigation/native";
+import {useCallback, useLayoutEffect} from "react";
+import {useFocusEffect, useIsFocused, useNavigation, useRoute} from "@react-navigation/native";
+import NavigationHeader from "../components/NavigationHader";
 
 export default function Settings() {
   const navigation = useNavigation();
-  const route = useRoute()
 
-  useLayoutEffect(() => {
-    navigation.getParent()?.setOptions({
-      title: 'Settings',
-    });
-  }, [route.name]);
+  // useFocusEffect(
+  //     useCallback(() => {
+  //       navigation.getParent()?.setOptions({
+  //         title: 'Settings',
+  //         headerLargeTitle: false,
+  //       });
+  //     }, [])
+  // )
 
   return (
       <View style={styles.container}>

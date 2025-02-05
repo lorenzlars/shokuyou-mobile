@@ -1,8 +1,7 @@
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import RecipeListItem from "../components/RecipeListItem";
 import {useLayoutEffect, useState} from "react";
-import {useNavigation, useRoute} from "@react-navigation/native";
-import NavigationButton from "../components/NavigationButton";
+import {useNavigation} from "@react-navigation/native";
 import {FlashList} from "@shopify/flash-list";
 import {withObservables} from "@nozbe/watermelondb/react";
 import Recipe from "../model/Recipe";
@@ -16,8 +15,6 @@ type Props = {
 
 function Recipes({recipes}: Props) {
   const navigation = useNavigation();
-  const route = useRoute()
-
 
   const [search, setSearch] = useState('');
   const filteredRecipes = recipes.filter(recipe =>
@@ -25,18 +22,15 @@ function Recipes({recipes}: Props) {
   );
 
   useLayoutEffect(() => {
-    navigation.getParent()?.setOptions({
-      title: 'Recipes',
-      headerLargeTitle: true,
+    navigation.setOptions({
       headerSearchBarOptions: {
         inputType: 'text',
         onChangeText: (event) => setSearch(event.nativeEvent.text),
 
       },
-      headerRight: () => <NavigationButton name="plus"
-                                           onPress={() => navigation.navigate('Recipe')}/>,
     });
-  }, [route.name]);
+  }, [])
+
 
   return (
       <SafeAreaView style={{flex: 1}}>
