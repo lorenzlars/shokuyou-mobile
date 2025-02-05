@@ -6,20 +6,19 @@ import {
 } from "@react-navigation/native";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {StyleSheet} from "react-native";
-import {useEffect} from "react";
-import {database, initDatabase} from "./model";
+import {createDatabase} from "./model";
 // https://reactnavigation.org/docs/stack-navigator#installation
 import 'react-native-gesture-handler';
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import Recipe from "./model/Recipe";
 import RecipeDetails from "./screens/recipes/details/RecipeDetails";
 import {BottomTabScreenProps, createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import RecipesNavigator from "./screens/recipes/RecipesNavigator";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import Settings from "./screens/settings/Settings";
-import RecipeForm from "./screens/recipes/details/RecipeForm";
+import {RecipeEditForm, RecipeForm} from "./screens/recipes/details/RecipeForm";
 import NavigationButton from "./components/NavigationButton";
 import type {StackScreenProps} from "@react-navigation/stack";
+import {DatabaseProvider} from "@nozbe/watermelondb/react";
 
 type RootTabNavigatorParamList = {
   RecipesNavigator: undefined;
@@ -28,8 +27,9 @@ type RootTabNavigatorParamList = {
 
 type RootStackNavigatorParamList = {
   RootTabNavigator: NavigatorScreenParams<RootTabNavigatorParamList>
-  RecipeDetails: { recipe: Recipe };
-  RecipeForm: { recipe: Recipe } | undefined;
+  RecipeDetails: { id: string };
+  RecipeForm: undefined;
+  RecipeEditForm: { id: string };
 };
 
 type RootStackNavigatorProps = StackScreenProps<RootStackNavigatorParamList, keyof RootStackNavigatorParamList>
@@ -71,34 +71,36 @@ function RootTabNavigator() {
 
 
 export default function App() {
-  useEffect(() => {
-    initDatabase();
-  }, [database]);
+  const database = createDatabase()
 
   return (
-      <SafeAreaProvider>
-        <NavigationContainer>
-          <Stack.Navigator screenOptions={{
-            headerBackVisible: false,
-            headerLeft: () => {
-              const navigation = useNavigation()
+      <DatabaseProvider database={database}>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <Stack.Navigator screenOptions={{
+              headerBackVisible: false,
+              headerLeft: () => {
+                const navigation = useNavigation()
 
-              return (<NavigationButton name="arrow-left" onPress={navigation.goBack}/>)
-            },
+                return (<NavigationButton name="arrow-left" onPress={navigation.goBack}/>)
+              },
 
-          }}>
-            <Stack.Screen name="RootTabNavigator" component={RootTabNavigator}
-                          options={{headerShown: false}}/>
-            <Stack.Screen name="RecipeDetails" component={RecipeDetails}
-                          options={{
-                            title: '',
-                            headerTransparent: true,
-                          }}/>
-            <Stack.Screen name="RecipeForm" component={RecipeForm}
-                          options={{presentation: 'modal'}}/>
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SafeAreaProvider>
+            }}>
+              <Stack.Screen name="RootTabNavigator" component={RootTabNavigator}
+                            options={{headerShown: false}}/>
+              <Stack.Screen name="RecipeDetails" component={RecipeDetails}
+                            options={{
+                              title: '',
+                              headerTransparent: true,
+                            }}/>
+              <Stack.Screen name="RecipeForm" component={RecipeForm}
+                            options={{presentation: 'modal'}}/>
+              <Stack.Screen name="RecipeEditForm" component={RecipeEditForm}
+                            options={{presentation: 'modal'}}/>
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </DatabaseProvider>
   );
 }
 

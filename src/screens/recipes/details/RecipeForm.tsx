@@ -5,20 +5,24 @@ import {useEffect, useLayoutEffect} from "react";
 import {useNavigation} from "@react-navigation/native";
 import NavigationButton from "../../../components/NavigationButton";
 import Recipe from "../../../model/Recipe";
-import {database} from "../../../model";
 import InputField from "../../../components/InputField";
 import {RecipeFormValues, useRecipeForm} from "./useRecipeForm";
+import {withObservables, useDatabase, compose, withDatabase} from "@nozbe/watermelondb/react";
+import {EnhancedPropsWithDatabase} from "../../../types/watermelondb";
 
-type Props = NativeStackScreenProps<RootParamList, 'RecipeForm'>;
+type Props = {
+  recipe?: Recipe
+}
 
-export default function RecipeForm({route}: Props) {
+export function RecipeForm({recipe}: Props) {
   const navigation = useNavigation();
+  const database = useDatabase()
   const {control, handleSubmit, reset} = useRecipeForm()
 
+  console.log('loaded', recipe)
   useEffect(() => {
-    if (route.params?.recipe) {
-      const recipe = route.params.recipe;
 
+    if (recipe) {
       reset({
         name: recipe.name,
         description: recipe.description,
@@ -26,9 +30,18 @@ export default function RecipeForm({route}: Props) {
     }
   }, [])
 
-  function handleBack() {
-    navigation.goBack();
-  }
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: recipe ? 'Edit Recipe' : 'New Recipe',
+      headerLeft: () => (
+          <NavigationButton name="close" theme="danger" onPress={navigation.goBack}/>
+      ),
+      headerRight: () => (
+          <NavigationButton name="check" theme="success"
+                            onPress={handleSubmit(recipe ? handleUpdate : handleCreate)}/>
+      ),
+    });
+  }, [navigation]);
 
   async function handleCreate(values: RecipeFormValues) {
     await database.write(async () => {
@@ -40,26 +53,16 @@ export default function RecipeForm({route}: Props) {
     })
   }
 
-  async function handleUpdate() {
-    // await database.write(async () => {
-    //   const recipe = await database.get<Recipe>('recipes').find(route.params.recipe!.id)
-    //   await recipe.destroyPermanently();
-    // })
+  async function handleUpdate(values: RecipeFormValues) {
+    await database.write(async () => {
+      await recipe!.update(() => {
+        recipe!.name = values.name
+        recipe!.description = values.description
+      })
+    })
 
     navigation.goBack();
   }
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-          <NavigationButton name="close" theme="danger" onPress={handleBack}/>
-      ),
-      headerRight: () => (
-          <NavigationButton name="check" theme="success"
-                            onPress={handleSubmit(route.params?.recipe ? handleUpdate : handleCreate)}/>
-      ),
-    });
-  }, [navigation]);
 
   return (
       <ScrollView style={styles.container}>
@@ -83,15 +86,20 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 10,
     padding: 10,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 99999,
   },
   image: {
     height: 200,
     borderRadius: 8,
   },
 });
+
+type EnhancedProps = EnhancedPropsWithDatabase<NativeStackScreenProps<RootParamList, 'RecipeForm'>>
+
+const enhance = compose(
+    withDatabase,
+    withObservables([], ({route, database}: EnhancedProps) => ({
+      recipe: database.collections.get<Recipe>('recipes').findAndObserve(route.params.id),
+    })),
+)
+
+export const RecipeEditForm = enhance(RecipeForm)

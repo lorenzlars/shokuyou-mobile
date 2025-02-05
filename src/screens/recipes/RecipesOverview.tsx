@@ -3,10 +3,10 @@ import RecipeListItem from "../../components/RecipeListItem";
 import {useLayoutEffect, useState} from "react";
 import {useNavigation} from "@react-navigation/native";
 import {FlashList} from "@shopify/flash-list";
-import {withObservables} from "@nozbe/watermelondb/react";
+import {compose, withDatabase, withObservables} from "@nozbe/watermelondb/react";
 import Recipe from "../../model/Recipe";
-import {database} from "../../model";
 import {RecipeNavigatorParams} from "./RecipesNavigator";
+import {Database} from "@nozbe/watermelondb";
 
 type Props = {
   recipes: Recipe[];
@@ -39,7 +39,7 @@ function RecipesOverview({recipes}: Props) {
             renderItem={({item}) =>
                 <RecipeListItem
                     recipe={item}
-                    onPress={() => navigation.navigate('RecipeDetails', {recipe: item._raw})}
+                    onPress={() => navigation.navigate('RecipeDetails', {id: item.id})}
                 />
             }
             estimatedItemSize={30}
@@ -53,8 +53,11 @@ function RecipesOverview({recipes}: Props) {
 
 const styles = StyleSheet.create({});
 
-const enhance = withObservables([], () => ({
-  recipes: database.collections.get<Recipe>('recipes').query(),
-}))
+const enhance = compose(
+    withDatabase,
+    withObservables([], ({database}: { database: Database }) => ({
+      recipes: database.collections.get<Recipe>('recipes').query().observeWithColumns(["name", "description"]),
+    })),
+)
 
 export default enhance(RecipesOverview)

@@ -1,36 +1,27 @@
 import {Image, Text, ScrollView, StyleSheet, View} from 'react-native';
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {useEffect, useLayoutEffect} from "react";
+import {useLayoutEffect} from "react";
 import {useNavigation} from "@react-navigation/native";
 import NavigationButton from "../../../components/NavigationButton";
 import Recipe from "../../../model/Recipe";
-import {database} from "../../../model";
 import ContextMenu from "react-native-context-menu-view";
-import {useRecipeForm} from "./useRecipeForm";
 import {RecipeNavigatorParams} from "../RecipesNavigator";
 import {RootParamList} from "../../../App";
+import {compose, useDatabase, withDatabase, withObservables} from "@nozbe/watermelondb/react";
+import {EnhancedPropsWithDatabase} from "../../../types/watermelondb";
 
-type Props = NativeStackScreenProps<RootParamList, 'RecipeDetails'>;
+type Props = {
+  recipe: Recipe
+}
 
-export default function RecipeDetails({route}: Props) {
+function RecipeDetails({recipe}: Props) {
   const navigation = useNavigation<RecipeNavigatorParams>();
-  const {control, handleSubmit, reset} = useRecipeForm()
-
-  useEffect(() => {
-    if (route.params?.recipe) {
-      const recipe = route.params.recipe;
-
-      reset({
-        name: recipe.name,
-        description: recipe.description,
-      })
-    }
-  }, [])
+  const database = useDatabase()
 
   async function handleDelete() {
     await database.write(async () => {
-      const recipe = await database.get<Recipe>('recipes').find(route.params.recipe!.id)
-      await recipe.destroyPermanently();
+      const recipeEntity = await database.get<Recipe>('recipes').find(recipe.id)
+      await recipeEntity.destroyPermanently();
     })
 
     navigation.goBack();
@@ -46,7 +37,7 @@ export default function RecipeDetails({route}: Props) {
                   case "Delete":
                     return handleDelete();
                   case "Edit":
-                    return navigation.navigate('RecipeForm', {recipe: route.params.recipe});
+                    return navigation.navigate('RecipeEditForm', {id: recipe.id});
                 }
               }}
               dropdownMenuMode={true}
@@ -62,8 +53,8 @@ export default function RecipeDetails({route}: Props) {
         <View>
           <Image style={styles.image} source={{uri: 'https://picsum.photos/200'}}/>
           <View style={styles.container}>
-            <Text style={styles.title}>{route.params.recipe.name}</Text>
-            <Text style={styles.contentField}>{route.params.recipe.description}</Text>
+            <Text style={styles.title}>{recipe.name}</Text>
+            <Text style={styles.contentField}>{recipe.description}</Text>
           </View>
         </View>
       </ScrollView>
@@ -84,3 +75,14 @@ const styles = StyleSheet.create({
   },
   contentField: {},
 });
+
+type EnhancedProps = EnhancedPropsWithDatabase<NativeStackScreenProps<RootParamList, 'RecipeDetails'>>;
+
+const enhance = compose(
+    withDatabase,
+    withObservables([], ({route, database}: EnhancedProps) => ({
+      recipe: database.collections.get<Recipe>('recipes').findAndObserve(route.params.id),
+    })),
+)
+
+export default enhance(RecipeDetails)
