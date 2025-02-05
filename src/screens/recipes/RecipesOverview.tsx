@@ -6,6 +6,7 @@ import {FlashList} from "@shopify/flash-list";
 import {withObservables} from "@nozbe/watermelondb/react";
 import Recipe from "../../model/Recipe";
 import {database} from "../../model";
+import {RecipeNavigatorParams} from "./RecipesNavigator";
 
 type Props = {
   recipes: Recipe[];
@@ -14,7 +15,7 @@ type Props = {
 }
 
 function RecipesOverview({recipes}: Props) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RecipeNavigatorParams>();
 
   const [search, setSearch] = useState('');
   const filteredRecipes = recipes.filter(recipe =>
@@ -26,7 +27,6 @@ function RecipesOverview({recipes}: Props) {
       headerSearchBarOptions: {
         inputType: 'text',
         onChangeText: (event) => setSearch(event.nativeEvent.text),
-
       },
     });
   }, [])

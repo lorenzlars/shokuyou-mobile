@@ -1,18 +1,17 @@
-import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {Image, ScrollView, StyleSheet, View} from 'react-native';
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {RootStackNavigatorParamList} from "../../../App";
+import {RootParamList} from "../../../App";
 import {useEffect, useLayoutEffect} from "react";
 import {useNavigation} from "@react-navigation/native";
 import NavigationButton from "../../../components/NavigationButton";
 import Recipe from "../../../model/Recipe";
 import {database} from "../../../model";
-import ContextMenu from "react-native-context-menu-view";
 import InputField from "../../../components/InputField";
 import {RecipeFormValues, useRecipeForm} from "./useRecipeForm";
 
-export type RecipeScreenNavigationProps = NativeStackScreenProps<RootStackNavigatorParamList, 'RecipeDetails'>;
+type Props = NativeStackScreenProps<RootParamList, 'RecipeForm'>;
 
-export default function RecipeDetails({route}: RecipeScreenNavigationProps) {
+export default function RecipeForm({route}: Props) {
   const navigation = useNavigation();
   const {control, handleSubmit, reset} = useRecipeForm()
 
@@ -41,46 +40,25 @@ export default function RecipeDetails({route}: RecipeScreenNavigationProps) {
     })
   }
 
-  async function handleDelete() {
-    await database.write(async () => {
-      const recipe = await database.get<Recipe>('recipes').find(route.params.recipe!.id)
-      await recipe.destroyPermanently();
-    })
+  async function handleUpdate() {
+    // await database.write(async () => {
+    //   const recipe = await database.get<Recipe>('recipes').find(route.params.recipe!.id)
+    //   await recipe.destroyPermanently();
+    // })
 
     navigation.goBack();
   }
 
   useLayoutEffect(() => {
-    if (route.params?.recipe) {
-      navigation.setOptions({
-        headerRight: () => (
-            <ContextMenu
-                actions={[{title: "Delete"}, {title: "Edit"}]}
-                onPress={({nativeEvent}) => {
-                  switch (nativeEvent.index) {
-                    case 0:
-                      return handleDelete();
-                    case 1:
-                      return navigation.navigate('RecipeForm', {recipe: route.params.recipe});
-                  }
-                }}
-                dropdownMenuMode={true}
-            >
-              <NavigationButton name="dots-horizontal"/>
-            </ContextMenu>
-        ),
-      });
-    } else {
-      navigation.setOptions({
-        headerLeft: () => (
-            <NavigationButton name="close" theme="danger" onPress={handleBack}/>
-        ),
-        headerRight: () => (
-            <NavigationButton name="check" theme="success" onPress={handleSubmit(handleCreate)}/>
-        ),
-      });
-    }
-
+    navigation.setOptions({
+      headerLeft: () => (
+          <NavigationButton name="close" theme="danger" onPress={handleBack}/>
+      ),
+      headerRight: () => (
+          <NavigationButton name="check" theme="success"
+                            onPress={handleSubmit(route.params?.recipe ? handleUpdate : handleCreate)}/>
+      ),
+    });
   }, [navigation]);
 
   return (

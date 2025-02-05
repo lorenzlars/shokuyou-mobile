@@ -1,4 +1,9 @@
-import {NavigationContainer} from "@react-navigation/native";
+import {
+  CompositeScreenProps,
+  NavigationContainer,
+  NavigatorScreenParams,
+  useNavigation
+} from "@react-navigation/native";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {StyleSheet} from "react-native";
 import {useEffect} from "react";
@@ -8,23 +13,30 @@ import 'react-native-gesture-handler';
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import Recipe from "./model/Recipe";
 import RecipeDetails from "./screens/recipes/details/RecipeDetails";
-import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import {BottomTabScreenProps, createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import RecipesNavigator from "./screens/recipes/RecipesNavigator";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import Settings from "./screens/settings/Settings";
 import RecipeForm from "./screens/recipes/details/RecipeForm";
+import NavigationButton from "./components/NavigationButton";
+import type {StackScreenProps} from "@react-navigation/stack";
 
-
-export type RootStackNavigatorParamList = {
-  RootTabNavigator: undefined;
-  RecipeDetails: { recipe?: Recipe };
-  RecipeForm: { recipe?: Recipe };
-};
-
-export type RootTabNavigatorParamList = {
+type RootTabNavigatorParamList = {
   RecipesNavigator: undefined;
   Settings: undefined;
 };
+
+type RootStackNavigatorParamList = {
+  RootTabNavigator: NavigatorScreenParams<RootTabNavigatorParamList>
+  RecipeDetails: { recipe: Recipe };
+  RecipeForm: { recipe: Recipe } | undefined;
+};
+
+type RootStackNavigatorProps = StackScreenProps<RootStackNavigatorParamList, keyof RootStackNavigatorParamList>
+type RootTabNavigatorProps = BottomTabScreenProps<RootTabNavigatorParamList, keyof RootTabNavigatorParamList>
+
+export type RootParamList = RootTabNavigatorParamList & RootStackNavigatorParamList
+export type RootNavigatorProps = CompositeScreenProps<RootStackNavigatorProps, RootTabNavigatorProps>
 
 const Stack = createNativeStackNavigator<RootStackNavigatorParamList>();
 const Tab = createBottomTabNavigator<RootTabNavigatorParamList>();
@@ -66,10 +78,22 @@ export default function App() {
   return (
       <SafeAreaProvider>
         <NavigationContainer>
-          <Stack.Navigator>
+          <Stack.Navigator screenOptions={{
+            headerBackVisible: false,
+            headerLeft: () => {
+              const navigation = useNavigation()
+
+              return (<NavigationButton name="arrow-left" onPress={navigation.goBack}/>)
+            },
+
+          }}>
             <Stack.Screen name="RootTabNavigator" component={RootTabNavigator}
                           options={{headerShown: false}}/>
-            <Stack.Screen name="RecipeDetails" component={RecipeDetails}/>
+            <Stack.Screen name="RecipeDetails" component={RecipeDetails}
+                          options={{
+                            title: '',
+                            headerTransparent: true,
+                          }}/>
             <Stack.Screen name="RecipeForm" component={RecipeForm}
                           options={{presentation: 'modal'}}/>
           </Stack.Navigator>
