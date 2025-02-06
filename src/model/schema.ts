@@ -8,6 +8,8 @@ export const schema = appSchema({
       columns: [
         {name: 'name', type: 'string'},
         {name: 'description', type: 'string'},
+        {name: 'created_at', type: 'number'},
+        {name: 'updated_at', type: 'number'},
       ]
     }),
   ]

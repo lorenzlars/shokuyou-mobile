@@ -1,11 +1,13 @@
 import {Control, Controller, FieldValues, Path} from "react-hook-form";
-import {StyleSheet, TextInput, View, Text} from "react-native";
+import {StyleSheet, TextInput, View, Text, TextInputProps} from "react-native";
 
 type Props<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;
   label?: string;
-  placeholder?: string
+  placeholder?: TextInputProps['placeholder'];
+  autoComplete?: TextInputProps['autoComplete'];
+  secureTextEntry?: TextInputProps['secureTextEntry'];
 }
 
 export default function InputField<T extends FieldValues>(props: Props<T>) {
@@ -24,6 +26,8 @@ export default function InputField<T extends FieldValues>(props: Props<T>) {
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
+                      autoComplete={props.autoComplete}
+                      secureTextEntry={props.secureTextEntry}
                   />
                 </View>
                 {error?.message && <Text style={styles.error}>{error.message}</Text>}
