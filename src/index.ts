@@ -9,8 +9,6 @@ import Recipe from "./model/Recipe";
 import axios from "axios";
 import {client} from "./api/client.gen";
 
-axios.defaults.baseURL = process.env.EXPO_PUBLIC_API_URL;
-
 client.setConfig({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
   throwOnError: true,

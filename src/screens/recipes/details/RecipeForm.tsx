@@ -1,4 +1,4 @@
-import {Image, ScrollView, StyleSheet, View} from 'react-native';
+import {Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {RootParamList} from "../../../App";
 import {useEffect, useLayoutEffect} from "react";
@@ -9,6 +9,11 @@ import InputField from "../../../components/InputField";
 import {RecipeFormValues, useRecipeForm} from "./useRecipeForm";
 import {withObservables, useDatabase, compose, withDatabase} from "@nozbe/watermelondb/react";
 import {EnhancedPropsWithDatabase, ObservableProps} from "../../../types/watermelondb";
+import * as ImagePicker from 'expo-image-picker';
+import FormButton from "../../../components/FormButton";
+import {Controller} from "react-hook-form";
+// import {File, Paths} from 'expo-file-system/next';
+
 
 type Props = {
   recipe?: Recipe
@@ -17,15 +22,14 @@ type Props = {
 export function RecipeForm({recipe}: Props) {
   const navigation = useNavigation();
   const database = useDatabase()
-  const {control, handleSubmit, reset} = useRecipeForm()
+  const {control, handleSubmit, reset, setValue} = useRecipeForm()
 
-  console.log('loaded', recipe)
   useEffect(() => {
-
     if (recipe) {
       reset({
         name: recipe.name,
         description: recipe.description,
+        imageUrl: recipe.imageUrl,
       })
     }
   }, [])
@@ -34,14 +38,38 @@ export function RecipeForm({recipe}: Props) {
     navigation.setOptions({
       title: recipe ? 'Edit Recipe' : 'New Recipe',
       headerLeft: () => (
-          <NavigationButton name="close" theme="danger" onPress={navigation.goBack}/>
+          <NavigationButton icon="close" theme="danger" onPress={navigation.goBack}/>
       ),
       headerRight: () => (
-          <NavigationButton name="check" theme="success"
+          <NavigationButton icon="check" theme="success"
                             onPress={handleSubmit(recipe ? handleUpdate : handleCreate)}/>
       ),
     });
   }, [navigation]);
+
+  // function createFile() {
+  //   try {
+  //     const file = new File(Paths.cache, 'example.txt');
+  //     file.create(); // can throw an error if the file already exists or no permission to create it
+  //     file.write('Hello, world!');
+  //     console.log(file.text()); // Hello, world!
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
+
+  async function pickImage() {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setValue('imageUrl', result.assets[0].uri)
+    }
+  }
 
   async function handleCreate(values: RecipeFormValues) {
     await database.write(async () => {
@@ -65,19 +93,30 @@ export function RecipeForm({recipe}: Props) {
   }
 
   return (
-      <ScrollView style={styles.container}>
-        <View>
-          <Image style={styles.image} source={{uri: 'https://picsum.photos/200'}}/>
-          <InputField
-              control={control}
-              name="name"
-              label="Name"/>
-          <InputField
-              control={control}
-              name="description"
-              label="Description"/>
-        </View>
-      </ScrollView>
+      <SafeAreaView style={{flex: 1}}>
+        <ScrollView>
+          <View style={styles.container}>
+            <Controller
+                control={control}
+                name="imageUrl"
+                render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
+                    <Image style={styles.image} source={{uri: value}}/>
+                )}
+            />
+            <FormButton onPress={pickImage} label="Pick Image"/>
+            <InputField
+                control={control}
+                name="name"
+                label="Name"
+            />
+            <InputField
+                control={control}
+                name="description"
+                label="Description"
+            />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
   );
 }
 

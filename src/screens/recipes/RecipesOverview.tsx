@@ -1,5 +1,5 @@
 import {SafeAreaView, StyleSheet, View} from 'react-native';
-import RecipeListItem from "../../components/RecipeListItem";
+import RecipeListItem from "./RecipeListItem";
 import {useLayoutEffect, useState} from "react";
 import {useNavigation} from "@react-navigation/native";
 import {FlashList} from "@shopify/flash-list";
@@ -34,6 +34,7 @@ function RecipesOverview({recipes}: Props) {
   return (
       <SafeAreaView style={{flex: 1}}>
         <FlashList
+            contentInsetAdjustmentBehavior="automatic"
             data={filteredRecipes}
             renderItem={({item}) =>
                 <RecipeListItem

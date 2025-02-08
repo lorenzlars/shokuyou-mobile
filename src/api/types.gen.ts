@@ -432,6 +432,29 @@ export type ScheduledMealResponsePaginatedDto = {
     content: Array<ScheduledMealResponseDto>;
 };
 
+export type SyncDataDto = {
+    created: Array<{
+        [key: string]: unknown;
+    }>;
+    updated: Array<{
+        [key: string]: unknown;
+    }>;
+    deleted: Array<string>;
+};
+
+export type SyncPushRequestDto = {
+    recipes: SyncDataDto;
+};
+
+export type SyncTablesDto = {
+    recipes: SyncDataDto;
+};
+
+export type SyncPullResponseDto = {
+    changes: SyncTablesDto;
+    timestamp: string;
+};
+
 export type GetRecipesData = {
     body?: never;
     path?: never;
@@ -1105,6 +1128,43 @@ export type UpdateScheduledMealResponses = {
 };
 
 export type UpdateScheduledMealResponse = UpdateScheduledMealResponses[keyof UpdateScheduledMealResponses];
+
+export type SyncPullData = {
+    body?: never;
+    path?: never;
+    query: {
+        last_pulled_at?: number;
+        schema_version: number;
+        migration: string;
+    };
+    url: '/v1/sync';
+};
+
+export type SyncPullErrors = {
+    /**
+     * Recipe not found
+     */
+    404: unknown;
+};
+
+export type SyncPullResponses = {
+    200: SyncPullResponseDto;
+};
+
+export type SyncPullResponse = SyncPullResponses[keyof SyncPullResponses];
+
+export type SyncPushData = {
+    body: SyncPushRequestDto;
+    path?: never;
+    query: {
+        last_pulled_at: number;
+    };
+    url: '/v1/sync';
+};
+
+export type SyncPushResponses = {
+    200: unknown;
+};
 
 export type ClientOptions = {
     baseURL: string;

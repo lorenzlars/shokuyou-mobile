@@ -1,4 +1,4 @@
-import {Image, Text, ScrollView, StyleSheet, View} from 'react-native';
+import {Image, Text, ScrollView, StyleSheet, View, Alert} from 'react-native';
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {useLayoutEffect} from "react";
 import {useNavigation} from "@react-navigation/native";
@@ -19,12 +19,17 @@ function RecipeDetails({recipe}: Props) {
   const database = useDatabase()
 
   async function handleDelete() {
-    await database.write(async () => {
-      const recipeEntity = await database.get<Recipe>('recipes').find(recipe.id)
-      await recipeEntity.destroyPermanently();
-    })
+    Alert.alert('Delete', 'Are you sure you want to delete this recipe?', [{text: 'Cancel'}, {
+      text: 'Delete', onPress: async () => {
+        await database.write(async () => {
+          const recipeEntity = await database.get<Recipe>('recipes').find(recipe.id)
+          await recipeEntity.destroyPermanently();
+        })
 
-    navigation.goBack();
+        navigation.goBack();
+      },
+      style: 'destructive'
+    }])
   }
 
   useLayoutEffect(() => {
@@ -42,7 +47,7 @@ function RecipeDetails({recipe}: Props) {
               }}
               dropdownMenuMode={true}
           >
-            <NavigationButton name="dots-horizontal"/>
+            <NavigationButton icon="dots-horizontal"/>
           </ContextMenu>
       ),
     });

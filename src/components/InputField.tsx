@@ -1,37 +1,37 @@
 import {Control, Controller, FieldValues, Path} from "react-hook-form";
 import {StyleSheet, TextInput, View, Text, TextInputProps} from "react-native";
 
-type Props<T extends FieldValues> = {
+type Props<T extends FieldValues> = TextInputProps & {
   control: Control<T>;
   name: Path<T>;
   label?: string;
-  placeholder?: TextInputProps['placeholder'];
-  autoComplete?: TextInputProps['autoComplete'];
-  secureTextEntry?: TextInputProps['secureTextEntry'];
 }
 
-export default function InputField<T extends FieldValues>(props: Props<T>) {
+export default function InputField<T extends FieldValues>({
+                                                            control,
+                                                            name,
+                                                            label,
+                                                            ...textInputProps
+                                                          }: Props<T>) {
   return (
 
       <Controller
-          control={props.control}
-          name={props.name}
+          control={control}
+          name={name}
           render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
-              <>
-                <View style={styles.container}>
-                  <Text>{props.label}</Text>
+              <View>
+                <View style={[styles.container, {borderColor: error?.message ? 'red' : '#bbbbbb'}]}>
+                  <Text style={styles.label}>{label}</Text>
                   <TextInput
                       style={styles.input}
-                      placeholder={props.placeholder}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
-                      autoComplete={props.autoComplete}
-                      secureTextEntry={props.secureTextEntry}
+                      {...textInputProps}
                   />
                 </View>
-                {error?.message && <Text style={styles.error}>{error.message}</Text>}
-              </>
+                <Text style={styles.error}>{error?.message}</Text>
+              </View>
           )}
       />
   );
@@ -39,18 +39,19 @@ export default function InputField<T extends FieldValues>(props: Props<T>) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 18,
+    padding: 10,
     borderColor: '#eeeeee',
     backgroundColor: '#ffffff',
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderRadius: 10,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
+    gap: 4,
+  },
+  label: {
+    fontSize: 12,
+    color: '#777777',
   },
   input: {
-    flex: 1,
     color: '#000000',
-    maxWidth: '70%',
   },
   error: {
     color: 'red',

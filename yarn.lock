@@ -4218,6 +4218,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-background-fetch@npm:~13.0.5":
+  version: 13.0.5
+  resolution: "expo-background-fetch@npm:13.0.5"
+  dependencies:
+    expo-task-manager: "npm:~12.0.5"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/c819e98d23629d4cf4ec66c764600733816588e31ed0b6b7494809956d926f4423aee964c6d919fe4ef70fac3e58e6bf99ecff3e5d882ff3b89e3322e4ad51fe
+  languageName: node
+  linkType: hard
+
 "expo-build-properties@npm:^0.13.2":
   version: 0.13.2
   resolution: "expo-build-properties@npm:0.13.2"
@@ -4243,6 +4254,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-file-system@npm:^18.0.10":
+  version: 18.0.10
+  resolution: "expo-file-system@npm:18.0.10"
+  dependencies:
+    web-streams-polyfill: "npm:^3.3.2"
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+  checksum: 10c0/ee75552f84173afbc6dbb9e5860a49d5ec4a642830b14ff04f410c5ef4808496fc4a93c8413f1f174072b0c6fbf6561fba07bbc5fc81ff14da2c8df444216eec
+  languageName: node
+  linkType: hard
+
 "expo-file-system@npm:~18.0.9":
   version: 18.0.9
   resolution: "expo-file-system@npm:18.0.9"
@@ -4264,6 +4287,26 @@ __metadata:
     expo: "*"
     react: "*"
   checksum: 10c0/4a86693a9ec2e5bc8a94f6abc007f188083b2c56e6b40f12e1c83a95cb619d7c6ce1028f683d00c238c530aa1a677a801ad19575f791fe7360c8dd308dc9cb40
+  languageName: node
+  linkType: hard
+
+"expo-image-loader@npm:~5.0.0":
+  version: 5.0.0
+  resolution: "expo-image-loader@npm:5.0.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/d9982e94c0437967d61b231ab12b32a47e3f96ceee0674b243621d87a9eedbedbc6e6879962ba7fe032c18dbc801cbb54034b56d1426e847dc7b9a8a29bfc740
+  languageName: node
+  linkType: hard
+
+"expo-image-picker@npm:~16.0.5":
+  version: 16.0.5
+  resolution: "expo-image-picker@npm:16.0.5"
+  dependencies:
+    expo-image-loader: "npm:~5.0.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/a8b7e7002af7f258c35298fb5bea8c5af2d9eb9ea6f8a6053a538fc4882ae17d484d492cf24c85e98fcdec79a13a67b355f22a4479e82ded1d10a1be885fe4ad
   languageName: node
   linkType: hard
 
@@ -4358,6 +4401,18 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/b608901ea6699e684a196cd0a92c79d08a2dbbb2affb7c3246ca767730d8a75045687b4b87adca8b862e58934f73c6dbf5bd8ce78bc59ce87920adc84ebada81
+  languageName: node
+  linkType: hard
+
+"expo-task-manager@npm:~12.0.5":
+  version: 12.0.5
+  resolution: "expo-task-manager@npm:12.0.5"
+  dependencies:
+    unimodules-app-loader: "npm:~5.0.1"
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+  checksum: 10c0/ad2c3e80356d9b59fb32d7b4a99cdffa257bac1b0945e8a790a9ea526c43c1e79716127059f6edf94699085373c9f6403edcd4fc5894fdcc6f41e61800bf0974
   languageName: node
   linkType: hard
 
@@ -7385,18 +7440,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:~2.20.2":
-  version: 2.20.2
-  resolution: "react-native-gesture-handler@npm:2.20.2"
+"react-native-gesture-handler@npm:^2.23.0":
+  version: 2.23.0
+  resolution: "react-native-gesture-handler@npm:2.23.0"
   dependencies:
     "@egjs/hammerjs": "npm:^2.0.17"
     hoist-non-react-statics: "npm:^3.3.0"
     invariant: "npm:^2.2.4"
-    prop-types: "npm:^15.7.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/94c16a40370adfaaff8af6aec5938a8d5c5704afaf7ec569d9e11c66ecc3b5c763314c091a76573885636c04d9e6084de3696d59595c56aac9eb17b2f28e5c6c
+  checksum: 10c0/b4bfa9f71990fb5f75225b63878f668a9c6cee29cea6636482b64708432fb46b8c969c570022728fb130bf4e6ce306719dae200d1cb4050fdd2690e34b7b2a78
   languageName: node
   linkType: hard
 
@@ -8108,15 +8162,19 @@ __metadata:
     "@types/react": "npm:~18.3.12"
     axios: "npm:^1.7.9"
     expo: "npm:~52.0.30"
+    expo-background-fetch: "npm:~13.0.5"
     expo-build-properties: "npm:^0.13.2"
+    expo-file-system: "npm:^18.0.10"
+    expo-image-picker: "npm:~16.0.5"
     expo-router: "npm:^4.0.17"
     expo-sqlite: "npm:~15.1.2"
     expo-status-bar: "npm:~2.0.1"
+    expo-task-manager: "npm:~12.0.5"
     react: "npm:18.3.1"
     react-hook-form: "npm:^7.54.2"
     react-native: "npm:0.76.6"
     react-native-context-menu-view: "npm:^1.16.0"
-    react-native-gesture-handler: "npm:~2.20.2"
+    react-native-gesture-handler: "npm:^2.23.0"
     react-native-reanimated: "npm:^3.16.7"
     react-native-safe-area-context: "npm:4.12.0"
     react-native-screens: "npm:~4.4.0"
@@ -8855,6 +8913,13 @@ __metadata:
   version: 2.1.0
   resolution: "unicode-property-aliases-ecmascript@npm:2.1.0"
   checksum: 10c0/50ded3f8c963c7785e48c510a3b7c6bc4e08a579551489aa0349680a35b1ceceec122e33b2b6c1b579d0be2250f34bb163ac35f5f8695fe10bbc67fb757f0af8
+  languageName: node
+  linkType: hard
+
+"unimodules-app-loader@npm:~5.0.1":
+  version: 5.0.1
+  resolution: "unimodules-app-loader@npm:5.0.1"
+  checksum: 10c0/eb3a9adcd3a166a546eb51e68ee378f1382fe374036ddd0c8d6a34345891cc4cfca4a0a0129ceab5f04b81e88975c49db281414e5411dcb62ed5439a5da4a46c
   languageName: node
   linkType: hard
 

@@ -19,9 +19,16 @@ import NavigationButton from "./components/NavigationButton";
 import type {StackScreenProps} from "@react-navigation/stack";
 import {DatabaseProvider} from "@nozbe/watermelondb/react";
 import SettingsNavigator from "./screens/settings/SettingsNavigator";
+import SettingsAccount from "./screens/settings/SettingsAccount";
+import {CloudProvider} from "./providers/CloudProvider";
+import SettingsIngredients from "./screens/settings/SettingsIngredients";
+import CartNavigator from "./screens/cart/CartNavigator";
+import {ScreenOptions} from "./constants/screenOptions";
+import {GestureHandlerRootView} from "react-native-gesture-handler";
 
 type RootTabNavigatorParamList = {
   RecipesNavigator: undefined;
+  CartNavigator: undefined;
   SettingsNavigator: undefined;
 };
 
@@ -30,6 +37,8 @@ type RootStackNavigatorParamList = {
   RecipeDetails: { id: string };
   RecipeForm: undefined;
   RecipeEditForm: { id: string };
+  SettingsAccount: undefined;
+  SettingsIngredients: undefined;
 };
 
 type RootStackNavigatorProps = StackScreenProps<RootStackNavigatorParamList, keyof RootStackNavigatorParamList>
@@ -47,6 +56,7 @@ function RootTabNavigator() {
           screenOptions={{
             headerShown: false,
             animation: 'shift',
+            tabBarInactiveTintColor: '#aaaaaa',
           }}
       >
         <Tab.Screen
@@ -54,7 +64,18 @@ function RootTabNavigator() {
             component={RecipesNavigator}
             options={{
               title: 'Recipes',
-              tabBarIcon: () => (<MaterialCommunityIcons name="chef-hat" size={24}/>)
+              tabBarBadge: 1,
+              tabBarIcon: ({color}) => (
+                  <MaterialCommunityIcons name="chef-hat" size={24} color={color}/>)
+            }}
+        />
+        <Tab.Screen
+            name="CartNavigator"
+            component={CartNavigator}
+            options={{
+              title: 'Cart',
+              tabBarIcon: ({color}) => (
+                  <MaterialCommunityIcons name="cart" size={24} color={color}/>)
             }}
         />
         <Tab.Screen
@@ -62,7 +83,8 @@ function RootTabNavigator() {
             component={SettingsNavigator}
             options={{
               title: 'Settings',
-              tabBarIcon: () => (<MaterialCommunityIcons name="cog" size={24}/>)
+              tabBarIcon: ({color}) => (
+                  <MaterialCommunityIcons name="cog" size={24} color={color}/>)
             }}
         />
       </Tab.Navigator>
@@ -73,33 +95,52 @@ function RootTabNavigator() {
 export default function App() {
   const database = createDatabase()
 
+  // useEffect(() => {
+  //   registerBackgroundFetchAsync()
+  // }, [])
+
   return (
       <DatabaseProvider database={database}>
-        <SafeAreaProvider>
-          <NavigationContainer>
-            <Stack.Navigator screenOptions={{
-              headerBackVisible: false,
-              headerLeft: () => {
-                const navigation = useNavigation()
+        <CloudProvider database={database}>
+          <GestureHandlerRootView>
+            <SafeAreaProvider>
+              <NavigationContainer>
+                <Stack.Navigator screenOptions={{
+                  headerBackVisible: false,
+                  headerLeft: () => {
+                    const navigation = useNavigation()
 
-                return (<NavigationButton name="arrow-left" onPress={navigation.goBack}/>)
-              },
+                    return (<NavigationButton icon="chevron-left" onPress={navigation.goBack}/>)
+                  },
 
-            }}>
-              <Stack.Screen name="RootTabNavigator" component={RootTabNavigator}
-                            options={{headerShown: false}}/>
-              <Stack.Screen name="RecipeDetails" component={RecipeDetails}
-                            options={{
-                              title: '',
-                              headerTransparent: true,
-                            }}/>
-              <Stack.Screen name="RecipeForm" component={RecipeForm}
-                            options={{presentation: 'modal'}}/>
-              <Stack.Screen name="RecipeEditForm" component={RecipeEditForm}
-                            options={{presentation: 'modal'}}/>
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SafeAreaProvider>
+                }}>
+                  <Stack.Screen name="RootTabNavigator" component={RootTabNavigator}
+                                options={{headerShown: false}}/>
+                  <Stack.Screen name="RecipeDetails" component={RecipeDetails}
+                                options={{
+                                  title: '',
+                                  headerTransparent: true,
+                                }}/>
+                  <Stack.Screen name="RecipeForm" component={RecipeForm}
+                                options={{presentation: 'modal', headerTransparent: true}}/>
+                  <Stack.Screen name="RecipeEditForm" component={RecipeEditForm}
+                                options={{presentation: 'modal', headerTransparent: true}}/>
+                  <Stack.Screen name="SettingsAccount" component={SettingsAccount}
+                                options={{
+                                  title: '',
+                                  headerTransparent: true,
+                                  presentation: 'modal'
+                                }}/>
+                  <Stack.Screen name="SettingsIngredients" component={SettingsIngredients}
+                                options={{
+                                  ...ScreenOptions.largeHeader,
+                                  title: 'Ingredients',
+                                }}/>
+                </Stack.Navigator>
+              </NavigationContainer>
+            </SafeAreaProvider>
+          </GestureHandlerRootView>
+        </CloudProvider>
       </DatabaseProvider>
   );
 }
