@@ -12,7 +12,7 @@ export default function ProductLineItem({product, onPress}: Props) {
         <View style={styles.container}>
           {!!product.quantity && <Text>{product.quantity}</Text>}
           {!!product.unit && <Text>{product.unit}</Text>}
-          <Text>{product.name}</Text>
+          <Text style={styles.name}>{product.name}</Text>
         </View>
       </Pressable>
   )
@@ -20,8 +20,12 @@ export default function ProductLineItem({product, onPress}: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'row',
     padding: 10,
+    height: 60,
+    gap: 4,
+  },
+  name: {
+    fontWeight: 600
   }
 });

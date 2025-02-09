@@ -1,5 +1,5 @@
 import {StyleSheet, View} from 'react-native'
-import React, {ReactNode,} from 'react'
+import React from 'react'
 import {useDatabase} from "@nozbe/watermelondb/react";
 import useProductForm, {ProductFormValues} from "./useProductForm";
 import InputField from "../../components/InputField";
@@ -17,6 +17,8 @@ export default function ProductForm() {
     await database.write(async () => {
       await database.get<Product>('products').create((recipe) => {
         recipe.name = values.name
+        recipe.unit = values.unit
+        recipe.quantity = values.quantity
       })
     })
   }
@@ -24,6 +26,8 @@ export default function ProductForm() {
   return (
       <View style={styles.container}>
         <InputField control={control} name="name" label="Name"/>
+        <InputField control={control} name="unit" label="Unit"/>
+        <InputField control={control} name="quantity" label="Quantity" inputMode="numeric"/>
         <FormButton label="Add" onPress={handleSubmit(handleCreate)}/>
       </View>
   )

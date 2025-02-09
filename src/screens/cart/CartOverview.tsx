@@ -2,40 +2,22 @@ import {SafeAreaView, StyleSheet, View, Text, Pressable} from 'react-native';
 import {useEffect, useLayoutEffect, useState} from "react";
 import {useNavigation} from "@react-navigation/native";
 import {FlashList} from "@shopify/flash-list";
-import {compose, withDatabase, withObservables} from "@nozbe/watermelondb/react";
+import {compose, useDatabase, withDatabase, withObservables} from "@nozbe/watermelondb/react";
 import {Database} from "@nozbe/watermelondb";
 import {CartNavigatorParams} from "./CartNavigator";
 import Product from "../../model/Product";
-import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import BottomModal from "../../components/BottomModal";
 import ProductForm from "./ProductForm";
 import ProductLineItem from "./ProductLineItem";
-import Animated, {SharedValue, useAnimatedStyle} from "react-native-reanimated";
+import SwipeableListItem from "../../components/SwipeableListItem";
 
 type Props = {
   products: Product[];
   productCount: number
 }
 
-function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
-  const styleAnimation = useAnimatedStyle(() => {
-    console.log('showRightProgress:', prog.value);
-    console.log('appliedTranslation:', drag.value);
-
-    return {
-      transform: [{translateX: drag.value + 50}],
-    };
-  });
-
-  return (
-      <Animated.View style={styleAnimation}>
-        <Text>Text</Text>
-      </Animated.View>
-  );
-}
-
-
 function CartOverview({products, productCount}: Props) {
+  const database = useDatabase()
   const navigation = useNavigation<CartNavigatorParams>();
   const [visible, setVisible] = useState(false)
 
@@ -66,31 +48,40 @@ function CartOverview({products, productCount}: Props) {
     setVisible(true)
   }
 
+  async function handleDelete(product: Product) {
+    await database.write(async () => {
+      await product.destroyPermanently();
+    })
+  }
+
   return (
-      <SafeAreaView style={{flex: 1}}>
-        {filteredRecipes.length > 0 && <FlashList
-            data={filteredRecipes}
-            renderItem={({item}) =>
-                <ReanimatedSwipeable
-                    friction={2}
-                    enableTrackpadTwoFingerGesture
-                    rightThreshold={40}
-                    renderRightActions={RightAction}>
-                  <ProductLineItem product={item} onPress={() => setVisible(true)}/>
-                </ReanimatedSwipeable>
-            }
-            estimatedItemSize={productCount}
-            keyExtractor={(item) => item.id}
-            ItemSeparatorComponent={() => <View
-                style={{height: 1, backgroundColor: '#d1d1d1', marginLeft: 20, marginRight: 20}}/>}
-        />}
+      <>
+        <SafeAreaView style={{flex: 1}}>
+          {filteredRecipes.length > 0 && <FlashList
+              data={filteredRecipes}
+              renderItem={({item}) =>
+                  <SwipeableListItem onDelete={async () => await handleDelete(item)}>
+                    <ProductLineItem product={item}/>
+                  </SwipeableListItem>
+              }
+              estimatedItemSize={productCount}
+              keyExtractor={(item) => item.id}
+              ItemSeparatorComponent={() => <View
+                  style={{
+                    height: 1,
+                    backgroundColor: '#d1d1d1',
+                    marginLeft: 20,
+                    marginRight: 20
+                  }}/>}
+          />}
+        </SafeAreaView>
         <BottomModal visible={visible} onClose={() => setVisible(false)}>
           <ProductForm/>
         </BottomModal>
         <Pressable onPress={handleCreate}>
           <View style={styles.floatingButton}/>
         </Pressable>
-      </SafeAreaView>
+      </>
   );
 }
 
@@ -111,7 +102,7 @@ const styles = StyleSheet.create({
 const enhance = compose(
     withDatabase,
     withObservables<{ database: Database }, any>([], ({database}) => ({
-      products: database.collections.get<Product>('products').query().observeWithColumns(["_id"]),
+      products: database.collections.get<Product>('products').query().observeWithColumns(["_id", "quantity"]),
       productCount: database.collections.get<Product>('products').query().observeCount()
     })) as any,
 )

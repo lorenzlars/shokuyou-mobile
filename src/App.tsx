@@ -57,6 +57,7 @@ function RootTabNavigator() {
             headerShown: false,
             animation: 'shift',
             tabBarInactiveTintColor: '#aaaaaa',
+            lazy: false,
           }}
       >
         <Tab.Screen

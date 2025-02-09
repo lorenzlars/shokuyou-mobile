@@ -19,8 +19,8 @@ type Props = {
 const {height} = Dimensions.get('screen');
 
 const MAX_TOP_DISTANCE = height;
-const COLLAPSE_TOP_DISTANCE = height - 250;
-const MIN_TOP_DISTANCE = 150;
+const COLLAPSE_TOP_DISTANCE = height - 350;
+const MIN_TOP_DISTANCE = 64;
 
 export default function BottomModal({visible, onClose, children}: Props) {
   const keyboard = useAnimatedKeyboard();
