@@ -1,10 +1,10 @@
-import {Dimensions, Modal, StyleSheet, View} from 'react-native'
-import React, {ReactNode, useEffect,} from 'react'
+import {Dimensions, Modal, StyleSheet} from 'react-native'
+import React, {ReactNode} from 'react'
 import Animated, {
   clamp, useAnimatedKeyboard,
   useAnimatedStyle,
   useSharedValue, withTiming,
-  runOnJS
+  runOnJS, withDelay
 } from 'react-native-reanimated'
 import GrabLine from "./GrabLine";
 import {Gesture, GestureDetector} from "react-native-gesture-handler";
@@ -18,43 +18,42 @@ type Props = {
 
 const {height} = Dimensions.get('screen');
 
+const MAX_TOP_DISTANCE = height;
+const COLLAPSE_TOP_DISTANCE = height - 250;
+const MIN_TOP_DISTANCE = 150;
+
 export default function BottomModal({visible, onClose, children}: Props) {
   const keyboard = useAnimatedKeyboard();
-  const currentHeight = useSharedValue(height);
+  const currentHeight = useSharedValue(MAX_TOP_DISTANCE);
 
   const pan = Gesture.Pan()
       .onUpdate((event) => {
-        currentHeight.value = clamp(event.absoluteY, 150, height)
+        currentHeight.value = clamp(event.absoluteY, MIN_TOP_DISTANCE, MAX_TOP_DISTANCE)
       })
       .onEnd(() => {
-        if (currentHeight.value > height - 100) {
-          currentHeight.value = withTiming(height)
-          if (onClose) {
-            runOnJS(onClose)()
-          }
+        if (currentHeight.value > COLLAPSE_TOP_DISTANCE) {
+          currentHeight.value = withTiming(MAX_TOP_DISTANCE, undefined, () => {
+            if (onClose) {
+              runOnJS(onClose)()
+            }
+          })
         }
       })
 
   const animatedStyles = useAnimatedStyle(() => ({
-    top: clamp(currentHeight.value - keyboard.height.value, 150, height),
+    top: clamp(currentHeight.value - keyboard.height.value, MIN_TOP_DISTANCE, MAX_TOP_DISTANCE),
   }));
 
-  useEffect(() => {
-    currentHeight.value = withTiming(height - 150)
-  }, [visible])
-
-  // useEffect(() => {
-  //   if (currentHeight.value > height - 100 && onClose) {
-  //     onClose()
-  //   }
-  // }, [])
+  function handleShowModal() {
+    currentHeight.value = withDelay(1, withTiming(COLLAPSE_TOP_DISTANCE));
+  }
 
   return (
       <Modal
-          animationType="slide"
+          animationType="none"
           transparent={true}
           visible={visible}
-          onRequestClose={onClose}
+          onShow={handleShowModal}
       >
         <GestureDetector gesture={pan}>
           <Animated.View style={[styles.container, animatedStyles]}>
@@ -68,7 +67,6 @@ export default function BottomModal({visible, onClose, children}: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    zIndex: 9999999999999,
     backgroundColor: 'white',
     borderTopRightRadius: 16,
     borderTopLeftRadius: 16,
