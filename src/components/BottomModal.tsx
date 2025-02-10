@@ -1,4 +1,4 @@
-import { Dimensions, Modal, StyleSheet } from 'react-native';
+import { Dimensions, Modal, StyleSheet, View } from 'react-native';
 import React, { ReactNode } from 'react';
 import Animated, {
   clamp,
@@ -16,6 +16,8 @@ type Props = {
   visible?: boolean;
   onClose?: () => void;
   children?: ReactNode;
+  grabLeft?: ReactNode;
+  grabRight?: ReactNode;
 };
 
 const { height } = Dimensions.get('screen');
@@ -24,7 +26,7 @@ const MAX_TOP_DISTANCE = height;
 const COLLAPSE_TOP_DISTANCE = height - 350;
 const MIN_TOP_DISTANCE = 64;
 
-export default function BottomModal({ visible, onClose, children }: Props) {
+export default function BottomModal({ visible, onClose, children, grabLeft, grabRight }: Props) {
   const keyboard = useAnimatedKeyboard();
   const currentHeight = useSharedValue(MAX_TOP_DISTANCE);
 
@@ -54,7 +56,11 @@ export default function BottomModal({ visible, onClose, children }: Props) {
     <Modal animationType="none" transparent={true} visible={visible} onShow={handleShowModal}>
       <GestureDetector gesture={pan}>
         <Animated.View style={[styles.container, animatedStyles]}>
-          <GrabLine />
+          <View style={styles.grabContainer}>
+            {grabLeft}
+            <GrabLine />
+            {grabRight}
+          </View>
           {children}
         </Animated.View>
       </GestureDetector>
@@ -71,5 +77,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+  },
+  grabContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 10,
   },
 });

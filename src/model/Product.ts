@@ -4,6 +4,7 @@ import { date, readonly, text, field } from '@nozbe/watermelondb/decorators';
 export default class Product extends Model {
   static table = 'products';
 
+  @field('done') done: boolean;
   @text('name') name: string;
   @text('unit') unit?: string;
   @field('quantity') quantity?: number;

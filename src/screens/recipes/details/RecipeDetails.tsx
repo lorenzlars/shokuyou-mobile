@@ -57,7 +57,7 @@ function RecipeDetails({ recipe }: Props) {
   }, [navigation, database, recipe.id]);
 
   return (
-    <ScrollView>
+    <ScrollView contentInsetAdjustmentBehavior="automatic">
       <View>
         <Image style={styles.image} source={{ uri: 'https://picsum.photos/200' }} />
         <View style={styles.container}>

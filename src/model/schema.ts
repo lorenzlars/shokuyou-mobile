@@ -24,6 +24,7 @@ export const schema = appSchema({
     tableSchema({
       name: 'products',
       columns: [
+        { name: 'done', type: 'boolean' },
         { name: 'name', type: 'string' },
         { name: 'unit', type: 'string' },
         { name: 'quantity', type: 'number' },

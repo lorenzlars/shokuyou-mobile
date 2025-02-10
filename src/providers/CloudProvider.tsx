@@ -4,6 +4,7 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -50,27 +51,30 @@ export const useCloud = () => {
     setSignedIn(!!token);
   }, [token]);
 
-  async function signIn(username: string, password: string) {
-    if (!database || !setToken) {
-      throw new Error('useCloud must be used within a CloudProvider');
-    }
+  const signIn = useCallback(
+    async (username: string, password: string) => {
+      if (!database || !setToken) {
+        throw new Error('useCloud must be used within a CloudProvider');
+      }
 
-    const { data } = await AuthService.userLogin({
-      body: { username, password },
-    });
+      const { data } = await AuthService.userLogin({
+        body: { username, password },
+      });
 
-    await database.localStorage.set(storageKey, data?.accessToken);
-    setToken(data?.accessToken);
-  }
+      await database.localStorage.set(storageKey, data?.accessToken);
+      setToken(data?.accessToken);
+    },
+    [database, setToken],
+  );
 
-  async function signOut() {
+  const signOut = useCallback(async () => {
     if (!database || !setToken) {
       throw new Error('useCloud must be used within a CloudProvider');
     }
 
     await database.localStorage.remove(storageKey);
     setToken(undefined);
-  }
+  }, [database, setToken]);
 
   return {
     signedIn,

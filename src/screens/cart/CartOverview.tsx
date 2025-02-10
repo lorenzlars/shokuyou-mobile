@@ -10,6 +10,8 @@ import BottomModal from '../../components/BottomModal';
 import ProductForm from './ProductForm';
 import ProductLineItem from './ProductLineItem';
 import SwipeableListItem from '../../components/SwipeableListItem';
+import { ProductFormValues } from './useProductForm';
+import NavigationButton from '../../components/NavigationButton';
 
 type Props = {
   products: Product[];
@@ -44,13 +46,30 @@ function CartOverview({ products, productCount }: Props) {
     });
   }, [productCount, navigation]);
 
-  async function handleCreate() {
-    setVisible(true);
-  }
-
   async function handleDelete(product: Product) {
     await database.write(async () => {
       await product.destroyPermanently();
+    });
+  }
+
+  async function handleCheck(product: Product, value: boolean) {
+    await database.write(async () => {
+      await product.update((product) => {
+        product.done = value;
+      });
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async function handleCreate(values: ProductFormValues) {
+    // TODO: Build wrapper which checks if product should be added or existing quantity increased
+
+    await database.write(async () => {
+      await database.get<Product>('products').create((recipe) => {
+        recipe.name = values.name;
+        recipe.unit = values.unit;
+        recipe.quantity = values.quantity;
+      });
     });
   }
 
@@ -59,10 +78,11 @@ function CartOverview({ products, productCount }: Props) {
       <SafeAreaView style={{ flex: 1 }}>
         {filteredRecipes.length > 0 && (
           <FlashList
+            contentInsetAdjustmentBehavior="automatic"
             data={filteredRecipes}
             renderItem={({ item }) => (
               <SwipeableListItem onDelete={async () => await handleDelete(item)}>
-                <ProductLineItem product={item} />
+                <ProductLineItem product={item} onCheck={(value) => handleCheck(item, value)} />
               </SwipeableListItem>
             )}
             estimatedItemSize={productCount}
@@ -80,10 +100,13 @@ function CartOverview({ products, productCount }: Props) {
           />
         )}
       </SafeAreaView>
-      <BottomModal visible={visible} onClose={() => setVisible(false)}>
+      <BottomModal
+        visible={visible}
+        onClose={() => setVisible(false)}
+        grabRight={<NavigationButton icon="check" />}>
         <ProductForm />
       </BottomModal>
-      <Pressable onPress={handleCreate}>
+      <Pressable onPress={() => setVisible(true)}>
         <View style={styles.floatingButton} />
       </Pressable>
     </>
@@ -110,7 +133,7 @@ const enhance = compose(
     products: database.collections
       .get<Product>('products')
       .query()
-      .observeWithColumns(['_id', 'quantity']),
+      .observeWithColumns(['_id', 'quantity', 'name', 'done', 'unit']),
     productCount: database.collections.get<Product>('products').query().observeCount(),
   })) as any,
 );

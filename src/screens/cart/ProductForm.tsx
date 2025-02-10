@@ -1,10 +1,7 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import { useDatabase } from '@nozbe/watermelondb/react';
-import useProductForm, { ProductFormValues } from './useProductForm';
+import useProductForm from './useProductForm';
 import InputField from '../../components/InputField';
-import FormButton from '../../components/FormButton';
-import Product from '../../model/Product';
 import SelectField from '../../components/SelectField';
 
 enum IngredientUnit {
@@ -25,20 +22,7 @@ enum IngredientUnit {
 const IngredientUnitArray = Object.values(IngredientUnit);
 
 export default function ProductForm() {
-  const database = useDatabase();
-  const { control, handleSubmit, setValue, getValues } = useProductForm();
-
-  async function handleCreate(values: ProductFormValues) {
-    // TODO: Build wrapper which checks if product should be added or existing quantity increased
-
-    await database.write(async () => {
-      await database.get<Product>('products').create((recipe) => {
-        recipe.name = values.name;
-        recipe.unit = values.unit;
-        recipe.quantity = values.quantity;
-      });
-    });
-  }
+  const { control, setValue, getValues } = useProductForm();
 
   function handleAdd(quantity: number) {
     const { quantity: currentQuantity } = getValues();
@@ -56,7 +40,7 @@ export default function ProductForm() {
       <Button title="+ 100g" onPress={() => handleAdd(100)}></Button>
       <Text>Unit</Text>
       <SelectField control={control} name="unit" options={IngredientUnitArray} />
-      <FormButton label="Add" onPress={handleSubmit(handleCreate)} />
+      {/*<FormButton label="Add" onPress={handleSubmit(handleCreate)} />*/}
     </View>
   );
 }
