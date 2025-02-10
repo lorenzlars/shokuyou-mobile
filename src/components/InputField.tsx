@@ -26,7 +26,7 @@ export default function InputField<T extends FieldValues>({
                       style={styles.input}
                       onBlur={onBlur}
                       onChangeText={onChange}
-                      value={value}
+                      value={isNaN(value) ? value : value.toString()}
                       {...textInputProps}
                   />
                 </View>
