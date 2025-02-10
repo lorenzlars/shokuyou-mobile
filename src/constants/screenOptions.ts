@@ -5,6 +5,6 @@ export const ScreenOptions = {
     headerLargeTitleStyle: {
       fontWeight: '600',
       fontSize: 26,
-    }
-  }
-}
+    },
+  },
+};

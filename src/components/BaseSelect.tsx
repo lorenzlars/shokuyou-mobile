@@ -1,20 +1,20 @@
-import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {useEffect, useState} from "react";
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
 
 export type BaseSelectProps = {
   options: string[];
   value?: string;
   onValueChange?: (value: string) => void;
-}
+};
 
-export default function BaseSelect({options, value, onValueChange}: BaseSelectProps) {
-  const [currentValue, setCurrentValue] = useState(value)
+export default function BaseSelect({ options, value, onValueChange }: BaseSelectProps) {
+  const [currentValue, setCurrentValue] = useState(value);
 
   function handleValueChange(value: string) {
-    setCurrentValue(value)
+    setCurrentValue(value);
 
     if (onValueChange) {
-      onValueChange(value)
+      onValueChange(value);
     }
   }
 
@@ -22,21 +22,18 @@ export default function BaseSelect({options, value, onValueChange}: BaseSelectPr
     setCurrentValue(value);
   }, [value]);
 
-
   return (
-      <View>
-        {
-          options.map((option, index) => (
-              <Pressable key={index} onPress={() => handleValueChange(option)}>
-                <View style={styles.container}>
-                  <View style={[styles.selector, option === currentValue && styles.active]}></View>
-                  <Text>{option}</Text>
-                </View>
-              </Pressable>
-          ))
-        }
-      </View>
-  )
+    <View>
+      {options.map((option, index) => (
+        <Pressable key={index} onPress={() => handleValueChange(option)}>
+          <View style={styles.container}>
+            <View style={[styles.selector, option === currentValue && styles.active]}></View>
+            <Text>{option}</Text>
+          </View>
+        </Pressable>
+      ))}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -56,5 +53,5 @@ const styles = StyleSheet.create({
   active: {
     backgroundColor: '#000000',
     padding: 4,
-  }
+  },
 });

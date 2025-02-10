@@ -8,7 +8,10 @@
     "ios": "expo run:ios",
     "ios:device": "expo run:ios --device",
     "web": "expo start --web",
-    "api:generate": "openapi-ts"
+    "api:generate": "openapi-ts",
+    "lint": "eslint --max-warnings 0 .",
+    "lint:expo": "expo lint",
+    "postinstall": "husky"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
@@ -48,6 +51,12 @@
     "@babel/plugin-proposal-decorators": "^7.25.9",
     "@hey-api/openapi-ts": "^0.64.1",
     "@types/react": "~18.3.12",
+    "eslint": "^8.57.0",
+    "eslint-config-expo": "~8.0.1",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "husky": "^9.1.7",
+    "prettier": "^3.5.0",
     "typescript": "^5.3.3"
   },
   "private": true,

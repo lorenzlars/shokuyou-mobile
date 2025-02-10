@@ -1,6 +1,6 @@
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
-import {sync} from "./sync";
+import { useSync } from './useSync';
 
 const BACKGROUND_FETCH_TASK = 'background-fetch';
 
@@ -9,7 +9,7 @@ export async function registerBackgroundFetchAsync() {
 
   if (!isRegistered) {
     TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
-      await sync()
+      await useSync();
 
       return BackgroundFetch.BackgroundFetchResult.NewData;
     });

@@ -1,28 +1,26 @@
-import {Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
-import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {RootParamList} from "../../../App";
-import {useEffect, useLayoutEffect} from "react";
-import {useNavigation} from "@react-navigation/native";
-import NavigationButton from "../../../components/NavigationButton";
-import Recipe from "../../../model/Recipe";
-import InputField from "../../../components/InputField";
-import {RecipeFormValues, useRecipeForm} from "./useRecipeForm";
-import {withObservables, useDatabase, compose, withDatabase} from "@nozbe/watermelondb/react";
-import {EnhancedPropsWithDatabase, ObservableProps} from "../../../types/watermelondb";
+import { Image, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootParamList } from '../../../App';
+import { useEffect, useLayoutEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import NavigationButton from '../../../components/NavigationButton';
+import Recipe from '../../../model/Recipe';
+import InputField from '../../../components/InputField';
+import { RecipeFormValues, useRecipeForm } from './useRecipeForm';
+import { withObservables, useDatabase, compose, withDatabase } from '@nozbe/watermelondb/react';
+import { EnhancedPropsWithDatabase, ObservableProps } from '../../../types/watermelondb';
 import * as ImagePicker from 'expo-image-picker';
-import FormButton from "../../../components/FormButton";
-import {Controller} from "react-hook-form";
-// import {File, Paths} from 'expo-file-system/next';
-
+import FormButton from '../../../components/FormButton';
+import { Controller } from 'react-hook-form';
 
 type Props = {
-  recipe?: Recipe
-}
+  recipe?: Recipe;
+};
 
-export function RecipeForm({recipe}: Props) {
+export function RecipeForm({ recipe }: Props) {
   const navigation = useNavigation();
-  const database = useDatabase()
-  const {control, handleSubmit, reset, setValue} = useRecipeForm()
+  const database = useDatabase();
+  const { control, handleSubmit, reset, setValue } = useRecipeForm();
 
   useEffect(() => {
     if (recipe) {
@@ -30,22 +28,46 @@ export function RecipeForm({recipe}: Props) {
         name: recipe.name,
         description: recipe.description,
         imageUrl: recipe.imageUrl,
-      })
+      });
     }
-  }, [])
+  }, [recipe, reset]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: recipe ? 'Edit Recipe' : 'New Recipe',
       headerLeft: () => (
-          <NavigationButton icon="close" theme="danger" onPress={navigation.goBack}/>
+        <NavigationButton icon="close" theme="danger" onPress={navigation.goBack} />
       ),
       headerRight: () => (
-          <NavigationButton icon="check" theme="success"
-                            onPress={handleSubmit(recipe ? handleUpdate : handleCreate)}/>
+        <NavigationButton
+          icon="check"
+          theme="success"
+          onPress={handleSubmit(recipe ? handleUpdate : handleCreate)}
+        />
       ),
     });
-  }, [navigation]);
+
+    async function handleCreate(values: RecipeFormValues) {
+      await database.write(async () => {
+        await database.get<Recipe>('recipes').create((recipe) => {
+          recipe.name = values.name;
+          recipe.description = values.description;
+        });
+        navigation.goBack();
+      });
+    }
+
+    async function handleUpdate(values: RecipeFormValues) {
+      await database.write(async () => {
+        await recipe!.update(() => {
+          recipe!.name = values.name;
+          recipe!.description = values.description;
+        });
+      });
+
+      navigation.goBack();
+    }
+  }, [navigation, database, recipe, handleSubmit]);
 
   // function createFile() {
   //   try {
@@ -67,56 +89,27 @@ export function RecipeForm({recipe}: Props) {
     });
 
     if (!result.canceled) {
-      setValue('imageUrl', result.assets[0].uri)
+      setValue('imageUrl', result.assets[0].uri);
     }
   }
 
-  async function handleCreate(values: RecipeFormValues) {
-    await database.write(async () => {
-      await database.get<Recipe>('recipes').create((recipe) => {
-        recipe.name = values.name
-        recipe.description = values.description
-      })
-      navigation.goBack();
-    })
-  }
-
-  async function handleUpdate(values: RecipeFormValues) {
-    await database.write(async () => {
-      await recipe!.update(() => {
-        recipe!.name = values.name
-        recipe!.description = values.description
-      })
-    })
-
-    navigation.goBack();
-  }
-
   return (
-      <SafeAreaView style={{flex: 1}}>
-        <ScrollView>
-          <View style={styles.container}>
-            <Controller
-                control={control}
-                name="imageUrl"
-                render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
-                    <Image style={styles.image} source={{uri: value}}/>
-                )}
-            />
-            <FormButton onPress={pickImage} label="Pick Image"/>
-            <InputField
-                control={control}
-                name="name"
-                label="Name"
-            />
-            <InputField
-                control={control}
-                name="description"
-                label="Description"
-            />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView>
+        <View style={styles.container}>
+          <Controller
+            control={control}
+            name="imageUrl"
+            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+              <Image style={styles.image} source={{ uri: value }} />
+            )}
+          />
+          <FormButton onPress={pickImage} label="Pick Image" />
+          <InputField control={control} name="name" label="Name" />
+          <InputField control={control} name="description" label="Description" />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -132,13 +125,15 @@ const styles = StyleSheet.create({
   },
 });
 
-type EnhancedProps = EnhancedPropsWithDatabase<NativeStackScreenProps<RootParamList, 'RecipeEditForm'>>
+type EnhancedProps = EnhancedPropsWithDatabase<
+  NativeStackScreenProps<RootParamList, 'RecipeEditForm'>
+>;
 
 const enhance = compose(
-    withDatabase,
-    withObservables<EnhancedProps, ObservableProps<Props>>([], ({route, database}) => ({
-      recipe: database.collections.get<Recipe>('recipes').findAndObserve(route.params.id),
-    })) as any,
-)
+  withDatabase,
+  withObservables<EnhancedProps, ObservableProps<Props>>([], ({ route, database }) => ({
+    recipe: database.collections.get<Recipe>('recipes').findAndObserve(route.params.id),
+  })) as any,
+);
 
-export const RecipeEditForm = enhance(RecipeForm)
+export const RecipeEditForm = enhance(RecipeForm);

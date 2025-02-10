@@ -1,8 +1,8 @@
-import {Model} from '@nozbe/watermelondb'
-import {date, readonly, relation, text} from '@nozbe/watermelondb/decorators'
+import { Model } from '@nozbe/watermelondb';
+import { date, readonly, text } from '@nozbe/watermelondb/decorators';
 
 export default class Recipe extends Model {
-  static table = 'recipes'
+  static table = 'recipes';
 
   @text('name') name: string;
   @text('description') description: string;
@@ -10,6 +10,6 @@ export default class Recipe extends Model {
 
   // @relation('ingredients', 'ingredient_id') ingredients
 
-  @readonly @date('created_at') createdAt
-  @readonly @date('updated_at') updatedAt
+  @readonly @date('created_at') createdAt;
+  @readonly @date('updated_at') updatedAt;
 }

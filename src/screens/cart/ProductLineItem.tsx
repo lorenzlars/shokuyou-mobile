@@ -1,21 +1,21 @@
-import {Pressable, StyleSheet, Text, View} from "react-native";
-import Product from "../../model/Product";
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Product from '../../model/Product';
 
 type Props = {
   product: Product;
   onPress?: () => void;
-}
+};
 
-export default function ProductLineItem({product, onPress}: Props) {
+export default function ProductLineItem({ product, onPress }: Props) {
   return (
-      <Pressable onPress={onPress}>
-        <View style={styles.container}>
-          {!!product.quantity && <Text>{product.quantity}</Text>}
-          {!!product.unit && <Text>{product.unit}</Text>}
-          <Text style={styles.name}>{product.name}</Text>
-        </View>
-      </Pressable>
-  )
+    <Pressable onPress={onPress}>
+      <View style={styles.container}>
+        {!!product.quantity && <Text>{product.quantity}</Text>}
+        {!!product.unit && <Text>{product.unit}</Text>}
+        <Text style={styles.name}>{product.name}</Text>
+      </View>
+    </Pressable>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -26,6 +26,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   name: {
-    fontWeight: 600
-  }
+    fontWeight: 600,
+  },
 });

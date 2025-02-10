@@ -4,76 +4,77 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
-  useContext, useEffect,
-  useState
+  useContext,
+  useEffect,
+  useState,
 } from 'react';
-import {Database} from "@nozbe/watermelondb";
-import {client} from "../api/client.gen";
-import {AuthService} from "../api";
+import { Database } from '@nozbe/watermelondb';
+import { client } from '../api/client.gen';
+import { AuthService } from '../api';
 
 type CloudContext = {
-  token?: string
-  setToken?: Dispatch<SetStateAction<string | undefined>>
-  database?: Database
-}
+  token?: string;
+  setToken?: Dispatch<SetStateAction<string | undefined>>;
+  database?: Database;
+};
 
 type Props = {
-  database: Database
-  children: ReactNode
-}
+  database: Database;
+  children: ReactNode;
+};
 
-const storageKey = 'accessToken'
+const storageKey = 'accessToken';
 const CloudContext = createContext<CloudContext>({});
 
-export function CloudProvider({children, database}: Props) {
+export function CloudProvider({ children, database }: Props) {
   const [token, setToken] = useState<string>();
 
   database.localStorage.get<string>(storageKey).then((storedToken) => {
-    setToken(storedToken ?? undefined)
-  })
+    setToken(storedToken ?? undefined);
+  });
 
   client.instance.interceptors.request.use((config) => {
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
 
-    return config
-  })
+    return config;
+  });
 
-  return createElement(CloudContext.Provider, {value: {setToken, token, database}}, children)
+  return createElement(CloudContext.Provider, { value: { setToken, token, database } }, children);
 }
 
 export const useCloud = () => {
-  const [signedIn, setSignedIn] = useState(false)
-  const {database, setToken, token} = useContext<CloudContext>(CloudContext)
+  const [signedIn, setSignedIn] = useState(false);
+  const { database, setToken, token } = useContext<CloudContext>(CloudContext);
 
   useEffect(() => {
-    setSignedIn(!!token)
-  }, [token])
+    setSignedIn(!!token);
+  }, [token]);
 
   async function signIn(username: string, password: string) {
     if (!database || !setToken) {
-      throw new Error("useCloud must be used within a CloudProvider")
+      throw new Error('useCloud must be used within a CloudProvider');
     }
 
-    const {data} = await AuthService.userLogin({
-      body: {username, password}
-    })
+    const { data } = await AuthService.userLogin({
+      body: { username, password },
+    });
 
-    await database.localStorage.set(storageKey, data?.accessToken)
-    setToken(data?.accessToken)
+    await database.localStorage.set(storageKey, data?.accessToken);
+    setToken(data?.accessToken);
   }
 
   async function signOut() {
     if (!database || !setToken) {
-      throw new Error("useCloud must be used within a CloudProvider")
+      throw new Error('useCloud must be used within a CloudProvider');
     }
 
-    await database.localStorage.remove(storageKey)
-    setToken(undefined)
+    await database.localStorage.remove(storageKey);
+    setToken(undefined);
   }
 
   return {
     signedIn,
     signIn,
-    signOut
-  }
-}
+    signOut,
+  };
+};

@@ -1,9 +1,7 @@
-import {StyleSheet, View} from 'react-native'
+import { StyleSheet, View } from 'react-native';
 
 export default function GrabLine() {
-  return (
-      <View style={styles.line}/>
-  )
+  return <View style={styles.line} />;
 }
 
 const styles = StyleSheet.create({
@@ -15,5 +13,5 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignSelf: 'center',
     marginVertical: 10,
-  }
-})
+  },
+});

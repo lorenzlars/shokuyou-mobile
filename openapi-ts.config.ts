@@ -1,4 +1,4 @@
-import {defineConfig, defaultPlugins} from '@hey-api/openapi-ts'
+import { defineConfig, defaultPlugins } from '@hey-api/openapi-ts';
 
 export default defineConfig({
   input: 'http://localhost:3000/docs-yaml',
@@ -16,4 +16,4 @@ export default defineConfig({
       asClass: true,
     },
   ],
-})
+});
