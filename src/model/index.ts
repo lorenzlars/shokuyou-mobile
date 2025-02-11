@@ -5,6 +5,7 @@ import migrations from './migrations';
 import Recipe from './Recipe';
 import Ingredient from './Ingredient';
 import Product from './Product';
+import RecipesIngredients from './RecipesIngredients';
 
 export function createDatabase() {
   const adapter = new SQLiteAdapter({
@@ -15,6 +16,6 @@ export function createDatabase() {
 
   return new Database({
     adapter,
-    modelClasses: [Recipe, Product, Ingredient],
+    modelClasses: [Recipe, Product, Ingredient, RecipesIngredients],
   });
 }

@@ -9,12 +9,16 @@ import { RecipesNavigatorParams } from '../RecipesNavigator';
 import { RootParamList } from '../../../App';
 import { compose, useDatabase, withDatabase, withObservables } from '@nozbe/watermelondb/react';
 import { EnhancedPropsWithDatabase, ObservableProps } from '../../../types/watermelondb';
+import Ingredient from '../../../model/Ingredient';
+import { Q } from '@nozbe/watermelondb';
+import RecipesIngredients from '../../../model/RecipesIngredients';
 
 type Props = {
   recipe: Recipe;
+  ingredients: (Ingredient & RecipesIngredients)[];
 };
 
-function RecipeDetails({ recipe }: Props) {
+function RecipeDetails({ recipe, ingredients }: Props) {
   const navigation = useNavigation<RecipesNavigatorParams>();
   const database = useDatabase();
 
@@ -64,6 +68,13 @@ function RecipeDetails({ recipe }: Props) {
           <Text style={styles.title}>{recipe.name}</Text>
           <Text style={styles.contentField}>{recipe.description}</Text>
         </View>
+        {ingredients.map((ingredient) => (
+          <View>
+            <Text>{ingredient.name}</Text>
+            <Text>{ingredient.unit}</Text>
+            <Text>{ingredient.quantity}</Text>
+          </View>
+        ))}
       </View>
     </ScrollView>
   );
@@ -92,6 +103,13 @@ const enhance = compose(
   withDatabase,
   withObservables<EnhancedProps, ObservableProps<Props>>([], ({ route, database }) => ({
     recipe: database.collections.get<Recipe>('recipes').findAndObserve(route.params.id),
+    ingredients: database.collections
+      .get<Ingredient & RecipesIngredients>('ingredients')
+      .query(
+        Q.experimentalJoinTables(['recipes_ingredients']),
+        Q.on('recipes_ingredients', 'recipe_id', route.params.id),
+      )
+      .observe(),
   })) as any,
 );
 

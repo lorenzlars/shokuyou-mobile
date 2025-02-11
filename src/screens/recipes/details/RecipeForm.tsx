@@ -1,4 +1,4 @@
-import { Image, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, SafeAreaView, ScrollView, StyleSheet, View, Text } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootParamList } from '../../../App';
 import { useEffect, useLayoutEffect } from 'react';
@@ -11,7 +11,10 @@ import { withObservables, useDatabase, compose, withDatabase } from '@nozbe/wate
 import { EnhancedPropsWithDatabase, ObservableProps } from '../../../types/watermelondb';
 import * as ImagePicker from 'expo-image-picker';
 import FormButton from '../../../components/FormButton';
-import { Controller } from 'react-hook-form';
+import { Controller, useFieldArray } from 'react-hook-form';
+import Ingredient from '../../../model/Ingredient';
+import { Q } from '@nozbe/watermelondb';
+import RecipesIngredients from '../../../model/RecipesIngredients';
 
 type Props = {
   recipe?: Recipe;
@@ -21,6 +24,10 @@ export function RecipeForm({ recipe }: Props) {
   const navigation = useNavigation();
   const database = useDatabase();
   const { control, handleSubmit, reset, setValue } = useRecipeForm();
+  const { insert } = useFieldArray({
+    control,
+    name: 'ingredients',
+  });
 
   useEffect(() => {
     if (recipe) {
@@ -48,13 +55,47 @@ export function RecipeForm({ recipe }: Props) {
     });
 
     async function handleCreate(values: RecipeFormValues) {
-      await database.write(async () => {
-        await database.get<Recipe>('recipes').create((recipe) => {
-          recipe.name = values.name;
-          recipe.description = values.description;
+      try {
+        await database.write(async () => {
+          const ingredients: Ingredient[] = [];
+
+          for (const ingredient of values.ingredients) {
+            const availableIngredient = await database.collections
+              .get<Ingredient>('ingredients')
+              .query(Q.where('name', Q.like(ingredient.name)))
+              .fetch();
+            if (availableIngredient.length > 0) {
+              ingredients.push(availableIngredient[0]);
+            } else {
+              ingredients.push(
+                await database.get<Ingredient>('ingredients').create((recipe) => {
+                  recipe.name = ingredient.name;
+                }),
+              );
+            }
+          }
+
+          const recipe = await database.get<Recipe>('recipes').create((recipe) => {
+            recipe.name = values.name;
+            recipe.description = values.description;
+          });
+
+          for (const [index, ingredient] of values.ingredients.entries()) {
+            await database
+              .get<RecipesIngredients>('recipes_ingredients')
+              .create((recipeIngredient) => {
+                recipeIngredient.ingredient.set(ingredients[index]);
+                recipeIngredient.recipe.set(recipe);
+                recipeIngredient.quantity = ingredient.quantity;
+                recipeIngredient.unit = ingredient.unit;
+              });
+          }
+
+          navigation.goBack();
         });
-        navigation.goBack();
-      });
+      } catch (e) {
+        if (e instanceof Error) console.error(e.stack);
+      }
     }
 
     async function handleUpdate(values: RecipeFormValues) {
@@ -93,6 +134,14 @@ export function RecipeForm({ recipe }: Props) {
     }
   }
 
+  function handleAddIngredient() {
+    insert(0, {
+      name: 'test',
+      quantity: 0,
+      unit: 'g',
+    });
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView>
@@ -107,6 +156,18 @@ export function RecipeForm({ recipe }: Props) {
           <FormButton onPress={pickImage} label="Pick Image" />
           <InputField control={control} name="name" label="Name" />
           <InputField control={control} name="description" label="Description" />
+          <Text>Ingredients</Text>
+          <FormButton label="Add" onPress={handleAddIngredient} />
+          <Controller
+            control={control}
+            name="ingredients"
+            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+              <View>
+                {value?.map((ingredient, index) => <Text key={index}>{ingredient.name}</Text>)}
+                <Text>{error?.message}</Text>
+              </View>
+            )}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

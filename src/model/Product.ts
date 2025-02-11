@@ -9,6 +9,6 @@ export default class Product extends Model {
   @text('unit') unit?: string;
   @field('quantity') quantity?: number;
 
-  @readonly @date('created_at') createdAt;
-  @readonly @date('updated_at') updatedAt;
+  @readonly @date('created_at') createdAt: Date;
+  @readonly @date('updated_at') updatedAt: Date;
 }
