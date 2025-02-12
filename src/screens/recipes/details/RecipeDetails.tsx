@@ -1,6 +1,6 @@
 import { Image, Text, ScrollView, StyleSheet, View, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import NavigationButton from '../../../components/NavigationButton';
 import Recipe from '../../../model/Recipe';
@@ -15,12 +15,29 @@ import RecipesIngredients from '../../../model/RecipesIngredients';
 
 type Props = {
   recipe: Recipe;
-  ingredients: (Ingredient & RecipesIngredients)[];
 };
 
-function RecipeDetails({ recipe, ingredients }: Props) {
+function RecipeDetails({ recipe }: Props) {
   const navigation = useNavigation<RecipesNavigatorParams>();
   const database = useDatabase();
+  const [ingredients, setIngredients] = useState<(Ingredient & RecipesIngredients)[]>([]);
+
+  useEffect(() => {
+    database.collections
+      .get<RecipesIngredients>(RecipesIngredients.table)
+      .query(
+        Q.unsafeSqlQuery(
+          `SELECT recipes_ingredients.unit AS unit, recipes_ingredients.quantity AS quantity, ingredients.name AS name FROM recipes_ingredients
+           INNER JOIN ingredients ON recipes_ingredients.ingredient_id IS ingredients.id
+           WHERE recipes_ingredients.recipe_id = ?`,
+          [recipe.id],
+        ),
+      )
+      .unsafeFetchRaw()
+      .then((i) => {
+        setIngredients(i);
+      });
+  }, [database, recipe]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -68,11 +85,11 @@ function RecipeDetails({ recipe, ingredients }: Props) {
           <Text style={styles.title}>{recipe.name}</Text>
           <Text style={styles.contentField}>{recipe.description}</Text>
         </View>
-        {ingredients.map((ingredient) => (
-          <View>
-            <Text>{ingredient.name}</Text>
-            <Text>{ingredient.unit}</Text>
+        {ingredients.map((ingredient, index) => (
+          <View key={index} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             <Text>{ingredient.quantity}</Text>
+            <Text>{ingredient.unit}</Text>
+            <Text>{ingredient.name}</Text>
           </View>
         ))}
       </View>
@@ -103,13 +120,6 @@ const enhance = compose(
   withDatabase,
   withObservables<EnhancedProps, ObservableProps<Props>>([], ({ route, database }) => ({
     recipe: database.collections.get<Recipe>('recipes').findAndObserve(route.params.id),
-    ingredients: database.collections
-      .get<Ingredient & RecipesIngredients>('ingredients')
-      .query(
-        Q.experimentalJoinTables(['recipes_ingredients']),
-        Q.on('recipes_ingredients', 'recipe_id', route.params.id),
-      )
-      .observe(),
   })) as any,
 );
 

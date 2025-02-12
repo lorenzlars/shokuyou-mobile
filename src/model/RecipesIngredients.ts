@@ -10,7 +10,7 @@ export default class RecipesIngredients extends Model {
     ingredients: { type: 'belongs_to', key: 'ingredient_id' },
   };
 
-  @text('name') unit: string;
+  @text('unit') unit: string;
   @field('quantity') quantity: number;
 
   @readonly @date('created_at') createdAt: Date;

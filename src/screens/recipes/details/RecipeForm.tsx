@@ -55,47 +55,44 @@ export function RecipeForm({ recipe }: Props) {
     });
 
     async function handleCreate(values: RecipeFormValues) {
-      try {
-        await database.write(async () => {
-          const ingredients: Ingredient[] = [];
+      await database.write(async () => {
+        const ingredients: Ingredient[] = [];
 
-          for (const ingredient of values.ingredients) {
-            const availableIngredient = await database.collections
-              .get<Ingredient>('ingredients')
-              .query(Q.where('name', Q.like(ingredient.name)))
-              .fetch();
-            if (availableIngredient.length > 0) {
-              ingredients.push(availableIngredient[0]);
-            } else {
-              ingredients.push(
-                await database.get<Ingredient>('ingredients').create((recipe) => {
-                  recipe.name = ingredient.name;
-                }),
-              );
-            }
+        for (const ingredientToCreate of values.ingredients) {
+          const [availableIngredient] = await database.collections
+            .get<Ingredient>('ingredients')
+            .query(Q.where('name', Q.like(ingredientToCreate.name)))
+            .fetch();
+
+          if (availableIngredient) {
+            ingredients.push(availableIngredient);
+          } else {
+            ingredients.push(
+              await database.get<Ingredient>('ingredients').create((ingredient) => {
+                ingredient.name = ingredientToCreate.name;
+              }),
+            );
           }
+        }
 
-          const recipe = await database.get<Recipe>('recipes').create((recipe) => {
-            recipe.name = values.name;
-            recipe.description = values.description;
-          });
-
-          for (const [index, ingredient] of values.ingredients.entries()) {
-            await database
-              .get<RecipesIngredients>('recipes_ingredients')
-              .create((recipeIngredient) => {
-                recipeIngredient.ingredient.set(ingredients[index]);
-                recipeIngredient.recipe.set(recipe);
-                recipeIngredient.quantity = ingredient.quantity;
-                recipeIngredient.unit = ingredient.unit;
-              });
-          }
-
-          navigation.goBack();
+        const recipe = await database.get<Recipe>('recipes').create((recipe) => {
+          recipe.name = values.name;
+          recipe.description = values.description;
         });
-      } catch (e) {
-        if (e instanceof Error) console.error(e.stack);
-      }
+
+        for (const [index, ingredient] of values.ingredients.entries()) {
+          await database
+            .get<RecipesIngredients>('recipes_ingredients')
+            .create((recipeIngredient) => {
+              recipeIngredient.ingredient.set(ingredients[index]);
+              recipeIngredient.recipe.set(recipe);
+              recipeIngredient.quantity = ingredient.quantity;
+              recipeIngredient.unit = ingredient.unit;
+            });
+        }
+
+        navigation.goBack();
+      });
     }
 
     async function handleUpdate(values: RecipeFormValues) {
