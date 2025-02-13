@@ -15,19 +15,46 @@ import { Controller, useFieldArray } from 'react-hook-form';
 import Ingredient from '../../../model/Ingredient';
 import { Q } from '@nozbe/watermelondb';
 import RecipesIngredients from '../../../model/RecipesIngredients';
+import { RecipesNavigatorParams } from '../RecipesNavigator';
 
 type Props = {
   recipe?: Recipe;
 };
 
 export function RecipeForm({ recipe }: Props) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RecipesNavigatorParams>();
   const database = useDatabase();
-  const { control, handleSubmit, reset, setValue } = useRecipeForm();
-  const { insert } = useFieldArray({
+  const recipeForm = useRecipeForm();
+  const { control, handleSubmit, setValue, reset } = recipeForm;
+  const { fields, replace } = useFieldArray({
     control,
     name: 'ingredients',
   });
+
+  useEffect(() => {
+    if (recipe) {
+      database.collections
+        .get<RecipesIngredients>(RecipesIngredients.table)
+        .query(
+          Q.unsafeSqlQuery(
+            `SELECT recipes_ingredients.unit AS unit, recipes_ingredients.quantity AS quantity, ingredients.name AS name FROM recipes_ingredients
+           INNER JOIN ingredients ON recipes_ingredients.ingredient_id IS ingredients.id
+           WHERE recipes_ingredients.recipe_id = ?`,
+            [recipe.id],
+          ),
+        )
+        .unsafeFetchRaw()
+        .then((ingredients) => {
+          replace(
+            ingredients.map((ingredient) => ({
+              unit: ingredient.unit,
+              quantity: ingredient.quantity,
+              name: ingredient.name,
+            })),
+          );
+        });
+    }
+  }, [database, recipe, replace]);
 
   useEffect(() => {
     if (recipe) {
@@ -131,14 +158,6 @@ export function RecipeForm({ recipe }: Props) {
     }
   }
 
-  function handleAddIngredient() {
-    insert(0, {
-      name: 'test',
-      quantity: 0,
-      unit: 'g',
-    });
-  }
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView>
@@ -154,17 +173,37 @@ export function RecipeForm({ recipe }: Props) {
           <InputField control={control} name="name" label="Name" />
           <InputField control={control} name="description" label="Description" />
           <Text>Ingredients</Text>
-          <FormButton label="Add" onPress={handleAddIngredient} />
-          <Controller
-            control={control}
-            name="ingredients"
-            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-              <View>
-                {value?.map((ingredient, index) => <Text key={index}>{ingredient.name}</Text>)}
-                <Text>{error?.message}</Text>
-              </View>
-            )}
+          <FormButton
+            label="Add"
+            onPress={() =>
+              navigation.navigate('RecipeIngredientForm', {
+                formContext: recipeForm,
+                id: fields.length,
+              })
+            }
           />
+          {fields?.map((ingredient, index) => (
+            <View
+              key={ingredient.id}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              {/*<InputField*/}
+              {/*  control={control}*/}
+              {/*  name={`ingredients.${index}.quantity`}*/}
+              {/*  label="Quantity"*/}
+              {/*/>*/}
+              {/*<InputField control={control} name={`ingredients.${index}.unit`} label="Unit" />*/}
+              {/*<InputField control={control} name={`ingredients.${index}.name`} label="Name" />*/}
+              <NavigationButton
+                icon="pen"
+                onPress={() =>
+                  navigation.navigate('RecipeIngredientForm', {
+                    formContext: recipeForm,
+                    id: index,
+                  })
+                }
+              />
+            </View>
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>

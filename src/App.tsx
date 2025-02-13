@@ -24,6 +24,8 @@ import SettingsIngredients from './screens/settings/SettingsIngredients';
 import CartNavigator from './screens/cart/CartNavigator';
 import { ScreenOptions } from './constants/screenOptions';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import RecipeIngredientForm from './screens/recipes/details/RecipeIngredientForm';
+import { UseFormReturn } from 'react-hook-form';
 
 type RootTabNavigatorParamList = {
   RecipesNavigator: undefined;
@@ -36,6 +38,7 @@ type RootStackNavigatorParamList = {
   RecipeDetails: { id: string };
   RecipeForm: undefined;
   RecipeEditForm: { id: string };
+  RecipeIngredientForm: { id: number; formContext: UseFormReturn };
   SettingsAccount: undefined;
   SettingsIngredients: undefined;
 };
@@ -141,6 +144,11 @@ export default function App() {
                 <Stack.Screen
                   name="RecipeEditForm"
                   component={RecipeEditForm}
+                  options={{ presentation: 'modal', headerTransparent: true }}
+                />
+                <Stack.Screen
+                  name="RecipeIngredientForm"
+                  component={RecipeIngredientForm}
                   options={{ presentation: 'modal', headerTransparent: true }}
                 />
                 <Stack.Screen

@@ -2197,6 +2197,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native/normalize-colors@npm:0.76.7":
+  version: 0.76.7
+  resolution: "@react-native/normalize-colors@npm:0.76.7"
+  checksum: 10c0/40819ab42b12a79840023517733b919446bfe1106901eb9b34f00336c57e2eaf3ceca97497f70d42cc57b86e1724318abfd9d0a15c938db53a220018189f8eff
+  languageName: node
+  linkType: hard
+
 "@react-native/virtualized-lists@npm:0.76.6":
   version: 0.76.6
   resolution: "@react-native/virtualized-lists@npm:0.76.6"
@@ -5219,6 +5226,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-splash-screen@npm:^0.29.21":
+  version: 0.29.21
+  resolution: "expo-splash-screen@npm:0.29.21"
+  dependencies:
+    "@expo/prebuild-config": "npm:^8.0.25"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/f3d7f05379118d541ea2978f90f2dfd2b5bed53913e3184dfb6571c83ed94e8679688d726bc2ea0dc9bd1bac4db6dc20d36127336e68acc943a688e68cefebd8
+  languageName: node
+  linkType: hard
+
 "expo-sqlite@npm:~15.1.2":
   version: 15.1.2
   resolution: "expo-sqlite@npm:15.1.2"
@@ -5237,6 +5255,23 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/b608901ea6699e684a196cd0a92c79d08a2dbbb2affb7c3246ca767730d8a75045687b4b87adca8b862e58934f73c6dbf5bd8ce78bc59ce87920adc84ebada81
+  languageName: node
+  linkType: hard
+
+"expo-system-ui@npm:^4.0.8":
+  version: 4.0.8
+  resolution: "expo-system-ui@npm:4.0.8"
+  dependencies:
+    "@react-native/normalize-colors": "npm:0.76.7"
+    debug: "npm:^4.3.2"
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10c0/e6e10ba86e367148a7798c812f4816653c76cb51ba00b3f1e50a8c80d04980e58b04ffbf82b25501c778cf47905880802050de3a240cd05cc692ec28ec7fc72d
   languageName: node
   linkType: hard
 
@@ -8869,6 +8904,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-localization-settings@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "react-native-localization-settings@npm:1.2.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/b56412bbcea1c1d515303b3edfebe703907f98cb0e637c50fee02720e97c81a460443b033a94b734671d8d59bf9b1a2ec16e2cb2e1fc69010f89e6619cb74a10
+  languageName: node
+  linkType: hard
+
 "react-native-reanimated@npm:^3.16.7":
   version: 3.16.7
   resolution: "react-native-reanimated@npm:3.16.7"
@@ -9688,8 +9733,10 @@ __metadata:
     expo-file-system: "npm:^18.0.10"
     expo-image-picker: "npm:~16.0.5"
     expo-router: "npm:^4.0.17"
+    expo-splash-screen: "npm:^0.29.21"
     expo-sqlite: "npm:~15.1.2"
     expo-status-bar: "npm:~2.0.1"
+    expo-system-ui: "npm:^4.0.8"
     expo-task-manager: "npm:~12.0.5"
     husky: "npm:^9.1.7"
     prettier: "npm:^3.5.0"
@@ -9698,6 +9745,7 @@ __metadata:
     react-native: "npm:0.76.6"
     react-native-context-menu-view: "npm:^1.16.0"
     react-native-gesture-handler: "npm:^2.23.0"
+    react-native-localization-settings: "npm:^1.2.0"
     react-native-reanimated: "npm:^3.16.7"
     react-native-safe-area-context: "npm:4.12.0"
     react-native-screens: "npm:~4.4.0"

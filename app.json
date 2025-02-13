@@ -12,7 +12,8 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "dev.larslorenz.shokuyou"
+      "bundleIdentifier": "dev.larslorenz.shokuyou",
+      "icon": "./src/assets/images/icon.png"
     },
     "android": {
       "package": "dev.larslorenz.shokuyou"
@@ -43,6 +44,12 @@
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ],
+      [
+        "react-native-localization-settings",
+        {
+          "languages": ["en-GB", "de-DE"]
         }
       ]
     ]

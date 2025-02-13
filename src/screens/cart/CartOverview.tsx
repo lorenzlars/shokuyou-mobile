@@ -7,7 +7,7 @@ import { Database } from '@nozbe/watermelondb';
 import { CartNavigatorParams } from './CartNavigator';
 import Product from '../../model/Product';
 import BottomModal from '../../components/BottomModal';
-import ProductForm from './ProductForm';
+import IngredientForm from './ProductForm';
 import ProductLineItem from './ProductLineItem';
 import SwipeableListItem from '../../components/SwipeableListItem';
 import { ProductFormValues } from './useProductForm';
@@ -104,7 +104,7 @@ function CartOverview({ products, productCount }: Props) {
         visible={visible}
         onClose={() => setVisible(false)}
         grabRight={<NavigationButton icon="check" />}>
-        <ProductForm />
+        <IngredientForm />
       </BottomModal>
       <Pressable onPress={() => setVisible(true)}>
         <View style={styles.floatingButton} />
